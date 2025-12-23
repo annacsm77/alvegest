@@ -11,9 +11,9 @@ ini_set('display_startup_errors', 1); // Mostra gli errori che si verificano dur
  define('BASE_URL', '/alvegest/'); 
 
 
-define('DB_SERVER', 'localhost');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '154W37m8781200!');
+define('DB_SERVER', '');
+define('DB_USERNAME', '');
+define('DB_PASSWORD', '');
 define('DB_NAME', 'AlveGest');
 
 $conn = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
@@ -25,5 +25,6 @@ if ($conn->connect_error) {
 function url($path) {
     return BASE_URL . ltrim($path, '/');
 }
+
 
 ?>
