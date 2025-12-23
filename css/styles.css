@@ -1,0 +1,436 @@
+/* Stili generali */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+/* Menu */
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: #444;
+    overflow: hidden;
+}
+
+nav ul li {
+    float: left;
+}
+
+nav ul li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    background-color: #555;
+}
+
+/* --- STILI AGGIUNTIVI PER MENU A CASCATA (DROPDOWN) --- */
+
+.dropdown {
+    float: left;
+    overflow: hidden;
+}
+
+.dropdown .dropbtn {
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 14px 20px;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
+    cursor: pointer;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #555;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9; 
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 100; 
+}
+
+.dropdown-content a {
+    float: none;
+    color: black; 
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+/* --- FINE STILI DROPDOWN --- */
+
+
+/* Layout a 3 colonne */
+.main-content {
+    display: flex;
+    flex: 1;
+}
+
+/* Colonne */
+.left-column {
+    width: 10%;
+    background-color: #f4f4f4;
+}
+
+.center-column {
+    width: 80%;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.right-column {
+    width: 10%;
+    background-color: #f4f4f4;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* --- Form e Input Generali --- */
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="text"], 
+input[type="number"], 
+input[type="url"],
+textarea,
+select.form-control {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Contenitori Form */
+.form-container {
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* --- Tabelle e Compattazione --- */
+
+.table-container {
+    width: 90%;
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table-container th, .table-container td {
+    padding: 4px; 
+    text-align: left;
+    border: 1px solid #ddd;
+    vertical-align: middle; 
+}
+
+.table-container th {
+    background-color: #f2f2f2;
+}
+
+.table-container td {
+    line-height: 1.2; 
+}
+
+.note-column {
+    max-width: 150px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+/* --- Stili per Colonne a Larghezza Fissa (Arnie) --- */
+
+.cod-column {
+    max-width: 45px; 
+    width: 45px;
+    text-align: center;
+}
+
+.colore-regina-column, .dismessa-column {
+    max-width: 35px; 
+    width: 35px;
+    text-align: center; 
+}
+
+.data-creazione-column {
+    max-width: 90px;
+    width: 90px;
+    text-align: center;
+    white-space: nowrap; 
+}
+
+/* Assicurati che l'intestazione usi la stessa larghezza */
+.cod-column th { max-width: 45px; width: 45px; }
+.colore-regina-column th, .dismessa-column th { max-width: 35px; width: 35px; }
+.data-creazione-column th { max-width: 90px; width: 90px; }
+
+
+/* --- Bottoni (Base e Variazioni) --- */
+
+button, .btn {
+    padding: 8px 12px; 
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px; 
+    text-decoration: none;
+    color: white;
+    display: inline-block; 
+    text-align: center;
+    margin: 2px;
+}
+
+/* Allineamento pulsanti in linea all'interno della cella (per apiari e apicoltore) */
+td form {
+    display: inline-block;
+    margin: 0;
+}
+
+/* === LAYOUT GRIGLIA 2x2 PER LE AZIONI ARNIE (action-cell) === */
+
+.action-cell {
+    padding: 2px; 
+}
+
+.btn-grid-2x2 {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 3px; 
+    max-width: 150px; 
+    min-width: 150px; 
+    margin: 0 auto; 
+    padding: 0; 
+}
+
+/* Stile per i 4 elementi della griglia: ancore e bottone (Elimina) */
+.btn-grid-2x2 > a,
+.btn-grid-2x2 > form > button {
+    text-align: center; 
+    padding: 4px 5px; 
+    font-size: 11px; 
+    box-sizing: border-box;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    height: 25px; 
+    margin: 0; 
+    width: 100%; 
+}
+
+/* La form deve essere trattata in modo da non interferire con il layout grid */
+.btn-grid-2x2 form {
+    display: contents; 
+}
+/* === FINE LAYOUT GRIGLIA === */
+
+
+/* Variazioni di colore */
+.btn-modifica {
+    background-color: #4CAF50;
+}
+.btn-modifica:hover {
+    background-color: #45a049;
+}
+
+.btn-elimina {
+    background-color: #f44336;
+}
+.btn-elimina:hover {
+    background-color: #d32f2f;
+}
+
+.btn-inserisci, .btn-attivita {
+    background-color: #008CBA;
+}
+.btn-inserisci:hover, .btn-attivita:hover {
+    background-color: #0077a3;
+}
+
+.btn-stampa {
+    background-color: #FFA500;
+}
+.btn-stampa:hover {
+    background-color: #cc8400;
+}
+
+/* Bottoni grandi (usati nel form) */
+.btn-grande {
+    padding: 10px 20px; 
+    font-size: 16px; 
+    width: auto; 
+    display: inline-block;
+}
+
+/* Stili vari */
+.titolo-arnie {
+    color: red;
+    margin: 5px 0;
+}
+
+/* --- Stili per Filtri e Ricerca --- */
+
+.filtri-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px; 
+    margin-top: 10px;
+}
+
+.filtro-form {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.campo-ricerca {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.btn-filtro {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-filtro:hover {
+    background-color: #45a049;
+}
+
+/* === MODAL DI SUCCESSO === */
+.modal-success-overlay {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4); 
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-success-content {
+    background-color: #d4edda; 
+    color: #155724; 
+    padding: 20px;
+    border: 3px solid #c3e6cb;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    position: relative;
+}
+
+.close-modal {
+    color: #155724;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* --- STILI PER GRIGLIATURA GRIGIA E VERSIONE IN BASSO --- */
+
+/* Applica la grigliatura grigia al contenitore della tabella */
+.list-grid-container table {
+    border: none;
+    margin-top: 5px;
+}
+.list-grid-container table th, .list-grid-container table td {
+    border: 1px solid #ccc; /* Bordo grigio per la grigliatura */
+    padding: 6px;
+}
+
+/* Posizione Versione in Basso a Sinistra */
+.versione-info {
+    position: fixed;
+    bottom: 5px;
+    left: 10px;
+    font-size: 10px;
+    color: #999;
+    padding: 2px 5px;
+    background-color: #fff;
+    border-radius: 3px;
+    z-index: 99;
+    margin: 0;
+}
