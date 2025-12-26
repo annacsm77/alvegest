@@ -15,9 +15,9 @@ include 'includes/config.php';
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header>
-       <?php include 'includes/header.php';  ?>
-    </header>
+<header>
+    <?php include TPL_PATH . 'header.php'; ?>
+</header>
 
     <div class="main-content">
         <div class="left-column"></div>
@@ -83,6 +83,9 @@ include 'includes/config.php';
         <div class="right-column"></div>
     </div>
 
-    <?php include 'includes/footer.php'; ?>
+<footer>
+    <?php include TPL_PATH . 'footer.php'; ?>
+</footer>
+
 </body>
 </html>
