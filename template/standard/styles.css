@@ -1,129 +1,224 @@
 /* ==========================================================================
-   ALVEGEST - CSS UNIFICATO PER TEMPLATE
+   ALVEGEST - STYLES.CSS UNIFICATO (V.B.0.8.6)
    ========================================================================== */
 
-:root {
-    /* Tavolozza Colori */
-    --primary-color: #ffcc00;    /* Giallo Alveare */
-    --secondary-color: #333333;  /* Testo scuro */
-    --accent-color: #e67e22;     /* Arancione miele per dettagli */
-    --bg-color: #f4f4f4;         /* Sfondo grigio chiaro */
-    --white: #ffffff;
-    --error-color: #e74c3c;      /* Rosso per avvisi */
-    --success-color: #2ecc71;    /* Verde per conferme */
-
-    /* Spaziature e Bordi */
-    --border-radius: 8px;
-    --shadow: 0 4px 6px rgba(0,0,0,0.1);
-    --transition: all 0.3s ease;
-}
-
-/* 1. Reset e Base */
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--secondary-color);
+/* RESET GLOBALE */
+* {
     margin: 0;
     padding: 0;
-    line-height: 1.6;
+    box-sizing: border-box;
+}
+               
+               
+               
+:root {
+    --primary-bg: #e12326;    /* Rosso AlveGest */
+    --secondary-bg: #472014;  /* Marrone scuro Menu */
+    --form-bg: #fff3e2;       /* Crema Form */
+    --tab-inactive: #f1e4d1;  /* Beige Tab/Tabelle */
+    --main-text: #ffffff;
 }
 
-/* 2. Layout Comune */
-.container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: var(--white);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-}
-
-/* 3. Tipografia */
-h1, h2, h3 {
-    color: var(--secondary-color);
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 10px;
-}
-
-/* 4. Form e Input (Uniformati per tutte le pagine) */
-form {
+body {
+    font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    max-width: 400px;
-    margin: 0 auto;
+    min-height: 100vh;
 }
 
-label {
+
+h2 {
+    display: block;
+    font-size: 1 em;
+    padding 5;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
     font-weight: bold;
-    margin-bottom: -10px;
+    unicode-bidi: isolate;
+    color: #e12326 !important;
 }
 
-input[type="text"], 
-input[type="password"], 
-input[type="email"], 
-input[type="number"], 
-select, 
-textarea {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    transition: var(--transition);
+
+
+
+/* --- HEADER E MENU --- */
+header { background-color: var(--primary-bg); color: var(--main-text); text-align: center; padding: 0;}
+header h1 { padding: 15px 0 !important; font-size: 1.5rem; text-transform: uppercase; }
+
+nav { background-color: var(--secondary-bg); width: 100%; position: relative; z-index: 1000; }
+nav ul { list-style-type: none; display: flex; justify-content: flex-start; }
+
+nav ul li a, .dropdown .dropbtn {
+    display: block;
+    color: var(--main-text);
+    padding: 10px 20px !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
 }
 
-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 220px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
 }
+.dropdown-content a {
+    color: #333 !important;
+    padding: 12px 16px !important;
+    text-align: left !important;
+    display: block !important;
+    border-bottom: 1px solid #eee;
+}
+.dropdown:hover .dropdown-content { display: block; }
 
-/* 5. Pulsanti Uniformati */
-input[type="submit"], 
-button, 
-.btn {
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
-    padding: 12px 20px;
-    border: none;
-    border-radius: var(--border-radius);
+/* --- SISTEMA TAB (FIX DEFINITIVO) --- */
+.tabs-container { width: 100%; margin-top: 20px; }
+.tabs-menu { display: flex; list-style: none; border-bottom: 2px solid var(--primary-bg); }
+
+.tab-link {
+    background-color: var(--tab-inactive);
+    padding: 10px 20px;
     cursor: pointer;
+    border: 1px solid #ccc;
+    border-bottom: none;
     font-weight: bold;
-    font-size: 16px;
-    text-transform: uppercase;
-    transition: var(--transition);
+    margin-right: 2px;
+    color: #333;
+}
+.tab-link.active {
+    background-color: var(--primary-bg) !important;
+    color: white !important;
+    border-color: var(--primary-bg);
 }
 
-input[type="submit"]:hover, 
-button:hover {
-    background-color: #e5b800; /* Giallo un po' più scuro */
-    transform: translateY(-2px);
+/* Nota: rimosso !important da qui per permettere al JS di funzionare */
+.tab-content { 
+    display: none; 
+    padding: 20px; 
+    border: 1px solid #ccc; 
+    border-top: none; 
+    background: #fff;
+}
+.tab-content.active { 
+    display: block; 
 }
 
-/* 6. Tabelle (Per visualizzazione arnie e dati) */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th {
-    background-color: var(--secondary-color);
-    color: var(--white);
-    padding: 12px;
-    text-align: left;
-}
-
-td {
+/* --- TABELLE --- */
+.table-container { width: 100%; margin-top: 10px; }
+table { width: 100%; border-collapse: collapse; }
+th { 
+    background-color: var(--tab-inactive); 
+    border: 1px solid #ccc; 
     padding: 10px;
-    border-bottom: 1px solid #ddd;
+    text-align: left;
+    color: #333;
+}
+td { border: 1px solid #ccc; padding: 8px; background-color: #fff; }
+
+
+.filtri-container{    
+        margin:10px 0px 10px 0px ; 
+        padding: 5px;
 }
 
-tr:hover {
-    background-color: #fff9e6;
+
+/* --- PULSANTI E FEEDBACK (FIX VISIBILITÀ) --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;                                                    
+    height: 32px;
+    padding: 0 5px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    color: white; /* Testo base bianco */
 }
 
-/* 7. Classi di utilità */
-.text-center { text-align: center; }
-.error { color: var(--error-color); font-weight: bold; }
-.success { color: var(--success-color); font-weight: bold; }
+
+/* Colori forzati per i vari tipi di pulsante */
+.btn-salva, .btn-inserisci, .btn-cerca, .btn-modifica, .btn-elimina, .btn-annulla, .btn-reset {
+    color: white !important;
+}
+
+.btn-salva, .btn-inserisci, .btn-cerca { background-color: #28a745 !important; }
+.btn-modifica { background-color: #ffc107 !important; color: #333 !important; } /* Giallo con testo nero */
+.btn-elimina { background-color: #dc3545 !important; }
+.btn-annulla, .btn-reset { background-color: #6c757d !important; }
+.btn-attivita, .btn-stampa { background-color: #9dbd31 !important; }
+
+/* Icone FontAwesome */
+.btn::before { font-family: "Font Awesome 6 Free"; font-weight: 900; margin-right: 8px; }
+.btn-salva::before, .btn-inserisci::before, .btn-cerca::before { content: "\f0c7"; }
+.btn-modifica::before { content: "\f303"; }
+.btn-elimina::before { content: "\f2ed"; }
+.btn-reset::before { content: "\f2f1"; }
+
+/* --- FORM E INPUT --- */
+.form-container {
+    background-color: var(--form-bg);
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+
+
+.form-group label { display: block; font-weight: bold; margin-bottom: 5px; margin-top: 5px; color: #333; }
+.form-group input, .form-group select, .form-group textarea, .form-group checkbox   {
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 100%;
+    /*background-color: #ffffff;
+}
+
+/* RIGHE PERICOLO */
+tr.riga-pericolo td { background-color: #ffe6e6 !important; color: #b94a48 !important; }
+
+/* LAYOUT */
+/* --- LAYOUT (FIX SOVRAPPOSIZIONE) --- */
+/* --- LAYOUT (SOLUZIONE DEFINITIVA SOVRAPPOSIZIONE) --- */
+.main-content { 
+    display: flex !important; 
+    flex-direction: row !important; 
+    width: 100% !important; 
+    align-items: flex-start; /* Allinea le colonne in alto */
+    margin-top: 20px; 
+     background-color: #f4f4f4;
+}
+
+.left-column { 
+    width: 10% !important; 
+    min-width: 100px; /* Impedisce alla colonna sinistra di farsi schiacciare */
+    background-color: #f4f4f4; 
+}
+
+.center-column { 
+    flex: 1 !important; /* Forza la colonna a prendere tutto lo spazio rimasto senza sovrapporsi */
+    padding: 0 20px; 
+    background-color: #ffffff;
+    min-width: 0; /* Fix tecnico per impedire lo sballamento del layout con tabelle larghe */
+}
+
+.right-column { 
+    width: 10% !important; 
+    min-width: 50px; 
+    background-color: #f4f4f4; 
+}
+/
+/* INFO VERSIONE */
+.versione-info { 
+    position: fixed; 
+    bottom: 5px; 
+    left: 10px; 
+    font-size: 8px; 
+    color: #999; 
+}
