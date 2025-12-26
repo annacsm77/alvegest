@@ -1,103 +1,89 @@
 <?php
+// DEFINIZIONE VERSIONE FILE
+define('FILE_VERSION', 'S.0.4 (Layout Unificato)');
+
 require_once '../includes/config.php';
-require_once '../includes/header.php'; 
+require_once TPL_PATH . 'header.php'; 
 
-// Versione del file
-$versione = "S.0.3"; // Rimosso il join con TA_Apiari
-
-// --- RECUPERO DATI ---
 // Data odierna per il confronto
 $oggi = date('Y-m-d');
 
-$sql = "
-    SELECT 
-        S.SC_ID,
-        S.SC_DINIZIO,
-        S.SC_DATAF,
-        S.SC_AVA,
-        A.AR_CODICE,
-        A.AR_NOME,
-        T.AT_DESCR
-    FROM TR_SCAD S
-    JOIN AP_Arnie A ON S.SC_ARNIA = A.AR_ID
-    JOIN TA_Attivita T ON S.SC_TATT = T.AT_ID
-    WHERE S.SC_CHIUSO = 0
-    ORDER BY S.SC_DATAF ASC, A.AR_CODICE ASC
-";
+$sql = "SELECT S.SC_ID, S.SC_DINIZIO, S.SC_DATAF, S.SC_AVA, A.AR_CODICE, A.AR_NOME, T.AT_DESCR
+        FROM TR_SCAD S
+        JOIN AP_Arnie A ON S.SC_ARNIA = A.AR_ID
+        JOIN TA_Attivita T ON S.SC_TATT = T.AT_ID
+        WHERE S.SC_CHIUSO = 0
+        ORDER BY S.SC_DATAF ASC, A.AR_CODICE ASC";
 
 $result = $conn->query($sql);
-
 ?>
 
 <main class="main-content">
     <div class="left-column"></div>
 
-    <div class="center-column" style="padding: 5px;"> 
-        <h2 style="margin-top: 10px; margin-bottom: 5px;">Scadenziario Trattamenti <small>(V.<?php echo $versione; ?>)</small></h2>
+    <div class="center-column"> 
+        <h2>Scadenziario Trattamenti</h2>
 
-        <h3 style="margin-top: 10px; margin-bottom: 5px;">Trattamenti Attivi (SC_CHIUSO = 0)</h3>
-        <div class="table-container" style="max-height: 80vh; overflow-y: auto; border: 1px solid #ddd;">
-            <?php
-            if ($result && $result->num_rows > 0) {
-                echo "<table class='griglia-scadenziario'>
+        <div class="tabs-container" style="margin-top:0;">
+            <ul class="tabs-menu">
+                <li class="tab-link active">Trattamenti Attivi</li>
+            </ul>
+            
+            <div class="tab-content active">
+                <div class="table-container">
+                    <?php if ($result && $result->num_rows > 0): ?>
+                    <table class="selectable-table table-fixed-layout">
                         <thead>
                             <tr>
-                                <th style='width: 5%;'>ID</th>
-                                <th style='width: 15%;'>Arnia</th>
-                                <th style='width: 10%;'>Ciclo</th>
-                                <th style='width: 30%;'>Tipo Trattamento</th>
-                                <th style='width: 15%;'>Inizio</th>
-                                <th style='width: 15%;'>Scadenza</th>
-                                <th style='width: 10%;'>Stato</th>
+                                <th style="width: 50px;">ID</th>
+                                <th style="width: 180px;">Arnia</th>
+                                <th style="width: 60px; text-align: center;">Ciclo</th>
+                                <th class="col-auto">Tipo Trattamento</th>
+                                <th style="width: 100px;">Scadenza</th>
+                                <th style="width: 130px; text-align: center;">Stato</th>
                             </tr>
                         </thead>
-                        <tbody>";
-                while ($row = $result->fetch_assoc()) {
-                    
-                    $data_scadenza = $row['SC_DATAF'];
-                    $data_scadenza_ts = strtotime($data_scadenza);
-                    $oggi_ts = strtotime($oggi);
-                    $diff_seconds = $oggi_ts - $data_scadenza_ts;
-                    $diff_days = round($diff_seconds / (60 * 60 * 24)); // Differenza in giorni
+                        <tbody>
+                            <?php while ($row = $result->fetch_assoc()): 
+                                $data_scadenza = $row['SC_DATAF'];
+                                $diff_days = round((strtotime($oggi) - strtotime($data_scadenza)) / 86400);
 
-                    $indicatore_colore = 'colore-verde'; // Default: Verde
-                    $indicatore_testo = 'Entro Scad.';
-                    
-                    if ($diff_days > 0) {
-                        // SCADUTO
-                        if ($diff_days > 4) {
-                            $indicatore_colore = 'colore-rosso';
-                            $indicatore_testo = 'Ritardo > 4gg';
-                        } else {
-                            $indicatore_colore = 'colore-giallo';
-                            $indicatore_testo = 'Scaduto (<= 4gg)';
-                        }
-                    } else {
-                        // NON SCADUTO
-                        $indicatore_testo = 'Entro Scad.';
-                    }
-                    
-                    // Rimosso $apiario_nome
+                                $status_class = 'successo'; // Verde (standard CSS)
+                                $status_text = 'In corso';
 
-                    echo "<tr>
-                            <td>" . $row["SC_ID"] . "</td>
-                            <td>" . htmlspecialchars($row["AR_CODICE"]) . " - " . htmlspecialchars($row["AR_NOME"]) . "</td>
-                            <td style='text-align: center;'>" . $row["SC_AVA"] . "</td>
-                            <td>" . htmlspecialchars($row["AT_DESCR"]) . "</td>
-                            <td>" . date('d/m/Y', strtotime($row["SC_DINIZIO"])) . "</td>
-                            <td>" . date('d/m/Y', strtotime($data_scadenza)) . "</td>
-                            <td class='" . $indicatore_colore . " action-cell-compact' title='" . $indicatore_testo . "' style='text-align: center;'> 
-                                <span style='font-weight: bold;'>" . $indicatore_testo . "</span>
-                            </td>
-                          </tr>";
-                }
-                echo "</tbody></table>";
-            } else {
-                echo "<p>Nessun trattamento attivo o scaduto in attesa di completamento.</p>";
-            }
-            ?>
+                                if ($diff_days > 0) {
+                                    if ($diff_days > 4) {
+                                        $status_style = 'background-color: #f8d7da; color: #721c24;'; // Rosso
+                                        $status_text = 'Ritardo > 4gg';
+                                    } else {
+                                        $status_style = 'background-color: #fff3cd; color: #856404;'; // Giallo
+                                        $status_text = 'Scaduto';
+                                    }
+                                } else {
+                                    $status_style = 'background-color: #d4edda; color: #155724;'; // Verde
+                                    $status_text = 'In tempo';
+                                }
+                            ?>
+                            <tr>
+                                <td><?php echo $row["SC_ID"]; ?></td>
+                                <td><strong><?php echo htmlspecialchars($row["AR_CODICE"] . " - " . $row["AR_NOME"]); ?></strong></td>
+                                <td style="text-align: center;"><?php echo $row["SC_AVA"]; ?></td>
+                                <td class="col-auto"><?php echo htmlspecialchars($row["AT_DESCR"]); ?></td>
+                                <td><?php echo date('d/m/Y', strtotime($data_scadenza)); ?></td>
+                                <td style="text-align: center; font-weight: bold; <?php echo $status_style; ?> border-radius: 4px;">
+                                    <?php echo $status_text; ?>
+                                </td>
+                            </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                    <?php else: ?>
+                        <p style="padding: 20px; text-align: center;">Nessun trattamento attivo o scaduto.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
-
+        <div class="versione-info">Versione: <?php echo FILE_VERSION; ?></div>
     </div>
 
     <div class="right-column"></div>
@@ -105,15 +91,4 @@ $result = $conn->query($sql);
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-$(document).ready(function() {
-    
-    // Stili CSS per il semaforo (Da integrare in styles.css in produzione)
-    $('head').append('<style>.colore-verde { background-color: #d4edda; color: #155724; font-weight: bold; } .colore-giallo { background-color: #fff3cd; color: #856404; font-weight: bold; } .colore-rosso { background-color: #f8d7da; color: #721c24; font-weight: bold; } .griglia-scadenziario th, .griglia-scadenziario td { padding: 8px 4px; } .center-column { padding: 5px; } h2, h3 { margin-top: 10px; margin-bottom: 5px; } .griglia-scadenziario tbody tr:hover { background-color: #f0f0f0; }</style>');
-    
-});
-</script>
-
-<?php
-require_once '../includes/footer.php';
-?>
+<?php require_once TPL_PATH . 'footer.php'; ?>

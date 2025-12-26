@@ -1,24 +1,26 @@
 ﻿<?php
-require_once '../includes/config.php';
-require_once '../includes/header.php';
+// DEFINIZIONE VERSIONE FILE
+define('FILE_VERSION', 'V.0.0.1 (Template Tabs)');
 
-$versione = "A.1.5"; 
+require_once '../includes/config.php';
+require_once TPL_PATH . 'header.php';
+
 $messaggio = "";
 
-// --- LOGICA CRUD ---
+// --- 1. LOGICA CRUD ---
 
-// 1. ELIMINAZIONE
+// ELIMINAZIONE
 if (isset($_GET['elimina'])) {
     $id_del = (int)$_GET['elimina'];
     $stmt = $conn->prepare("DELETE FROM TA_Attivita WHERE AT_ID = ?");
     $stmt->bind_param("i", $id_del);
     if ($stmt->execute()) {
-        header("Location: attivita.php?status=del_success&tab=selezione");
+        header("Location: attivita.php?status=del_success");
         exit();
     }
 }
 
-// 2. SALVATAGGIO (Inserimento o Modifica)
+// SALVATAGGIO (Inserimento o Modifica)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_attivita'])) {
     $id = $_POST['id'] ?? null;
     $descrizione = trim($_POST["descrizione"] ?? '');
@@ -40,158 +42,155 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_attivita'])) {
     }
 
     if ($stmt->execute()) {
-        $redirect_id = $id ?: $conn->insert_id;
-        header("Location: attivita.php?status=success&tab=scheda&edit=" . $redirect_id);
+        $status = $id ? "update_success" : "insert_success";
+        header("Location: attivita.php?status=$status");
         exit();
     } else {
         $messaggio = "<p class='errore'>Errore DB: " . $conn->error . "</p>";
     }
 }
 
-// Feedback
+// 2. FEEDBACK E RECUPERO DATI
 if (isset($_GET['status'])) {
-    if ($_GET['status'] == 'success') $messaggio = "<p class='successo'>✅ Dati salvati correttamente!</p>";
-    if ($_GET['status'] == 'del_success') $messaggio = "<p class='successo'>🗑️ Attività eliminata con successo.</p>";
+    $st = $_GET['status'];
+    if ($st == 'insert_success') $messaggio = "<p class='successo'>Attività inserita con successo!</p>";
+    if ($st == 'update_success') $messaggio = "<p class='successo'>Attività aggiornata!</p>";
+    if ($st == 'del_success') $messaggio = "<p class='successo'>Attività eliminata!</p>";
 }
 
-// Recupero dati per Modifica
 $edit_id = $_GET['edit'] ?? null;
-$row_edit = null;
+$row_edit = ['AT_ID'=>'','AT_DESCR'=>'','AT_NOTE'=>'','AT_NR'=>0,'AT_GG'=>0,'AT_TRAT'=>0,'AT_MAG_ID'=>'','AT_SCARICO_FISSO'=>0];
 if ($edit_id) {
     $res = $conn->query("SELECT * FROM TA_Attivita WHERE AT_ID = $edit_id");
-    $row_edit = $res->fetch_assoc();
+    if ($row = $res->fetch_assoc()) $row_edit = $row;
 }
-
-$active_tab = $_GET['tab'] ?? 'selezione';
 ?>
 
 <main class="main-content">
     <div class="left-column"></div>
-    <div class="center-column" style="padding: 5px;">
-        <h2>Gestione Attività <small>(V.<?php echo $versione; ?>)</small></h2>
+    <div class="center-column">
+        <h2 class="titolo-arnie">Gestione Attività</h2>
         <?php echo $messaggio; ?>
 
-        <div class="tab-nav">
-            <button class="tab-button" id="tab-selezione" onclick="openTab(event, 'selezione')">ELENCO</button>
-            <button class="tab-button" id="tab-scheda" onclick="openTab(event, 'scheda')">DETTAGLIO SCHEDA</button>
-        </div>
+        <div class="tabs-container">
+            <ul class="tabs-menu">
+                <li class="tab-link <?php echo !$edit_id ? 'active' : ''; ?>" id="link-tab-lista" onclick="openTab(event, 'tab-lista')">Elenco Attività</li>
+                <li class="tab-link <?php echo $edit_id ? 'active' : ''; ?>" id="link-tab-form" onclick="openTab(event, 'tab-form')">
+                    <?php echo $edit_id ? "Dettaglio e Modifica" : "Nuova Attività"; ?>
+                </li>
+            </ul>
 
-        <div id="selezione" class="tab-content-item">
-            <div class="table-container" style="max-height: 60vh; overflow-y: auto; margin-top: 10px; border: 1px solid #ddd;">
-                <table class="selectable-table">
-                    <thead>
-                        <tr>
-                            <th>Descrizione Attività</th>
-                            <th style="width: 60px; text-align: center;">Tratt.</th>
-                            <th>Categoria Magazzino</th>
-                            <th style="width: 80px; text-align: center;">Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $lista = $conn->query("SELECT T.*, M.TM_Descrizione FROM TA_Attivita T LEFT JOIN TA_MAG M ON T.AT_MAG_ID = M.ID ORDER BY AT_DESCR ASC");
-                        while ($r = $lista->fetch_assoc()):
-                            $sel = ($edit_id == $r['AT_ID']) ? 'selected-row' : '';
-                        ?>
-                            <tr class="<?php echo $sel; ?>" onclick="window.location.href='attivita.php?edit=<?php echo $r['AT_ID']; ?>&tab=scheda'">
+            <div id="tab-lista" class="tab-content <?php echo !$edit_id ? 'active' : ''; ?>">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Descrizione Attività</th>
+                                <th class="cell-center">Tratt.</th>
+                                <th>Categoria Magazzino</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $lista = $conn->query("SELECT T.*, M.TM_Descrizione FROM TA_Attivita T LEFT JOIN TA_MAG M ON T.AT_MAG_ID = M.ID ORDER BY AT_DESCR ASC");
+                            while ($r = $lista->fetch_assoc()):
+                            ?>
+                            <tr onclick="window.location.href='attivita.php?edit=<?php echo $r['AT_ID']; ?>#tab-form'">
                                 <td><?php echo htmlspecialchars($r['AT_DESCR']); ?></td>
-                                <td style="text-align: center;"><?php echo ($r['AT_TRAT'] == 1) ? '✅' : ''; ?></td>
-                                <td><small><?php echo htmlspecialchars($r['TM_Descrizione'] ?? ''); ?></small></td>
-                                <td style="text-align: center;">
-                                    <a href="attivita.php?elimina=<?php echo $r['AT_ID']; ?>" class="btn btn-elimina" style="padding: 2px 5px; font-size: 10px;" onclick="event.stopPropagation(); return confirm('Eliminare questa attività?')">Elimina</a>
+                                <td class="cell-center"><?php echo ($r['AT_TRAT'] == 1) ? '✅' : ''; ?></td>
+                                <td><small><?php echo htmlspecialchars($r['TM_Descrizione'] ?? 'Nessun collegamento'); ?></small></td>
+                                <td>
+                                    <a href="attivita.php?edit=<?php echo $r['AT_ID']; ?>#tab-form" class="btn btn-modifica">Modifica</a>
                                 </td>
                             </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <button class="btn btn-inserisci btn-grande" style="margin-top: 15px; width: 100%;" onclick="window.location.href='attivita.php?tab=scheda'">+ AGGIUNGI NUOVA ATTIVITÀ</button>
-        </div>
 
-        <div id="scheda" class="tab-content-item">
-            <div class="form-container" style="margin-top: 10px; border: 2px solid #008CBA;">
-                <form action="attivita.php" method="post">
-                    <input type="hidden" name="id" value="<?php echo $row_edit['AT_ID'] ?? ''; ?>">
-                    
-                    <div class="form-group">
-                        <label>Descrizione attività:</label>
-                        <input type="text" name="descrizione" value="<?php echo htmlspecialchars($row_edit['AT_DESCR'] ?? ''); ?>" required>
-                    </div>
-
-                    <div style="background-color: #f0fff0; padding: 15px; border: 1px solid #90ee90; margin-bottom: 15px; border-radius: 5px;">
-                        <h4 style="margin: 0 0 10px 0; color: #2e7d32;">Integrazione Magazzino</h4>
-                        <label>Sottomastro (Categoria prodotto):</label>
-                        <select name="at_mag_id">
-                            <option value="">-- Nessun collegamento --</option>
-                            <?php
-                            $sm_res = $conn->query("SELECT ID, TM_Mastro, TM_SMastro, TM_Descrizione FROM TA_MAG WHERE TM_SMastro > 0 ORDER BY TM_Mastro, TM_SMastro");
-                            while($sm = $sm_res->fetch_assoc()) {
-                                $s = ($row_edit['AT_MAG_ID'] == $sm['ID']) ? 'selected' : '';
-                                echo "<option value='{$sm['ID']}' $s>[{$sm['TM_Mastro']}.{$sm['TM_SMastro']}] {$sm['TM_Descrizione']}</option>";
-                            }
-                            ?>
-                        </select>
-                        <div style="margin-top: 10px;">
-                            <input type="checkbox" name="at_scarico_fisso" id="chk_f" value="1" <?php echo ($row_edit['AT_SCARICO_FISSO'] ?? 0) == 1 ? 'checked' : ''; ?> style="width: auto;">
-                            <label for="chk_f" style="display:inline; font-weight: normal;">Scarico fisso (sempre 1 unità)</label>
-                        </div>
-                    </div>
-
-                    <div class="form-group-flex">
+            <div id="tab-form" class="tab-content <?php echo $edit_id ? 'active' : ''; ?>">
+                <div class="form-container">
+                    <form action="attivita.php" method="post">
+                        <input type="hidden" name="id" value="<?php echo $row_edit['AT_ID']; ?>">
+                        
                         <div class="form-group">
-                            <label>N. Ripetizioni:</label>
-                            <input type="number" name="nr_ripetizioni" value="<?php echo $row_edit['AT_NR'] ?? 0; ?>">
+                            <label>Descrizione attività:</label>
+                            <input type="text" name="descrizione" value="<?php echo htmlspecialchars($row_edit['AT_DESCR']); ?>" required>
                         </div>
+
+                        <div class="filtri-container" style="background-color: #f0fff0; border: 1px solid #90ee90;">
+                            <label style="color: #2e7d32;">Sottomastro (Magazzino):</label>
+                            <select name="at_mag_id">
+                                <option value="">-- Nessun collegamento --</option>
+                                <?php
+                                $sm_res = $conn->query("SELECT ID, TM_Mastro, TM_SMastro, TM_Descrizione FROM TA_MAG WHERE TM_SMastro > 0 ORDER BY TM_Mastro, TM_SMastro");
+                                while($sm = $sm_res->fetch_assoc()) {
+                                    $s = ($row_edit['AT_MAG_ID'] == $sm['ID']) ? 'selected' : '';
+                                    echo "<option value='{$sm['ID']}' $s>[{$sm['TM_Mastro']}.{$sm['TM_SMastro']}] {$sm['TM_Descrizione']}</option>";
+                                }
+                                ?>
+                            </select>
+                            <div class="form-group" style="margin-top: 10px;">
+                                <input type="checkbox" name="at_scarico_fisso" id="chk_f" value="1" <?php echo ($row_edit['AT_SCARICO_FISSO'] == 1) ? 'checked' : ''; ?> style="width: auto;">
+                                <label for="chk_f" style="display:inline;">Scarico fisso (1 unità)</label>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 20px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label>N. Ripetizioni:</label>
+                                <input type="number" name="nr_ripetizioni" value="<?php echo $row_edit['AT_NR']; ?>">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Validità (giorni):</label>
+                                <input type="number" name="gg_validita" value="<?php echo $row_edit['AT_GG']; ?>">
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label>Validità (giorni):</label>
-                            <input type="number" name="gg_validita" value="<?php echo $row_edit['AT_GG'] ?? 0; ?>">
+                            <input type="checkbox" name="is_trattamento" id="chk_t" value="1" <?php echo ($row_edit['AT_TRAT'] == 1) ? 'checked' : ''; ?> style="width: auto;">
+                            <label for="chk_t" style="display:inline;">È un trattamento sanitario</label>
                         </div>
-                    </div>
 
-                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" name="is_trattamento" id="chk_t" value="1" <?php echo ($row_edit['AT_TRAT'] ?? 0) == 1 ? 'checked' : ''; ?> style="width: auto;">
-                        <label for="chk_t" style="display:inline; margin-bottom: 0;">È un trattamento sanitario</label>
-                    </div>
+                        <div class="form-group">
+                            <label>Note aggiuntive:</label>
+                            <textarea name="note" rows="3"><?php echo htmlspecialchars($row_edit['AT_NOTE']); ?></textarea>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Note aggiuntive:</label>
-                        <textarea name="note" rows="3"><?php echo htmlspecialchars($row_edit['AT_NOTE'] ?? ''); ?></textarea>
-                    </div>
-
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button type="submit" name="salva_attivita" class="btn btn-inserisci btn-grande" style="flex:2;">SALVA DATI</button>
-                        <?php if($edit_id): ?>
-                            <a href="attivita.php?tab=scheda" class="btn btn-grande" style="background: #666; color:white; flex:1; text-align:center; text-decoration:none; line-height:40px; border-radius: 5px;">AGGIUNGI NUOVO</a>
-                        <?php endif; ?>
-                    </div>
-                </form>
+                        <div class="btn-group-form" style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" name="salva_attivita" class="btn btn-salva" style="flex:2;">Salva Dati</button>
+                            <?php if($edit_id): ?>
+                                <button type="submit" name="elimina" class="btn btn-elimina" style="flex:1;" onclick="return confirm('Eliminare questa attività?')">Elimina</button>
+                                <a href="attivita.php" class="btn btn-annulla" style="flex:1;">Annulla</a>
+                            <?php endif; ?>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+        <div class="versione-info">Versione: <?php echo FILE_VERSION; ?></div>
     </div>
     <div class="right-column"></div>
 </main>
 
 <script>
 function openTab(evt, tabName) {
-    document.querySelectorAll('.tab-content-item').forEach(i => i.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabName).classList.add('active');
-    if(evt) evt.currentTarget.classList.add('active');
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+    tablinks = document.getElementsByClassName("tab-link");
+    for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
+    document.getElementById(tabName).style.display = "block";
+    if (evt) evt.currentTarget.className += " active";
 }
-document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById('tab-<?php echo $active_tab; ?>');
-    if(btn) btn.click();
+
+window.addEventListener('DOMContentLoaded', () => {
+    if(window.location.search.indexOf('edit=') > -1 || window.location.hash === "#tab-form") {
+        document.getElementById('link-tab-form').click();
+    }
 });
 </script>
 
-<style>
-    .selected-row { background-color: #cceeff !important; font-weight: bold; }
-    .tab-nav { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 5px; }
-    .tab-button { flex: 1; padding: 10px; cursor: pointer; border: none; background: #eee; font-weight: bold; }
-    .tab-button.active { background: #008CBA; color: white; }
-    .tab-content-item { display: none; }
-    .tab-content-item.active { display: block; }
-    .selectable-table tr:hover { background-color: #f5f5f5; cursor: pointer; }
-</style>
-
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once TPL_PATH . 'footer.php'; ?>

@@ -1,11 +1,13 @@
 ﻿<?php
-require_once '../includes/config.php';
-require_once '../includes/header.php';
+// DEFINIZIONE VERSIONE FILE
+define('FILE_VERSION', 'M.0.5 (Layout Unificato)');
 
-$versione = "M.0.4";
+require_once '../includes/config.php';
+require_once TPL_PATH . 'header.php';
+
 $messaggio = "";
 
-// Gestione Redirect e Operazioni CRUD
+// --- GESTIONE OPERAZIONI CRUD ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_mag'])) {
     $id = $_POST['id'] ?? null;
     $mastro = (int)$_POST['tm_mastro'];
@@ -33,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_mag'])) {
 }
 
 if (isset($_GET["status"]) && $_GET["status"] == "success") {
-    $messaggio = "<p class='successo'>✅ Operazione completata con successo!</p>";
+    $messaggio = "<p class='successo'>Categoria di magazzino salvata correttamente!</p>";
 }
 
 // Parametri per la visualizzazione
@@ -42,7 +44,7 @@ $edit_id = $_GET['edit'] ?? null;
 $row_edit = null;
 
 if ($edit_id) {
-    $res = $conn->query("SELECT * FROM TA_MAG WHERE ID = $edit_id");
+    $res = $conn->query("SELECT * FROM TA_MAG WHERE ID = " . (int)$edit_id);
     $row_edit = $res->fetch_assoc();
 }
 
@@ -52,108 +54,109 @@ $lista = $conn->query("SELECT * FROM TA_MAG ORDER BY TM_Mastro ASC, TM_SMastro A
 <main class="main-content">
     <div class="left-column"></div>
 
-    <div class="center-column" style="padding: 5px;">
-        <h2 style="margin-top: 15px; margin-bottom: 15px;">Configurazione Magazzino <small>(V.<?php echo $versione; ?>)</small></h2>
+    <div class="center-column">
+        <h2>Configurazione Magazzino</h2>
         <?php echo $messaggio; ?>
 
-        <div class="tab-nav">
-            <button class="tab-button" id="tab-selezione" onclick="openTab(event, 'selezione')">ELENCO CATEGORIE</button>
-            <button class="tab-button" id="tab-scheda" onclick="openTab(event, 'scheda')">SCHEDA DETTAGLIO</button>
-        </div>
+        <div class="tabs-container">
+            <ul class="tabs-menu">
+                <li class="tab-link <?php echo ($active_tab == 'selezione') ? 'active' : ''; ?>" id="tab-link-selezione" onclick="openTab(event, 'selezione')">ELENCO CATEGORIE</li>
+                <li class="tab-link <?php echo ($active_tab == 'scheda') ? 'active' : ''; ?>" id="tab-link-scheda" onclick="openTab(event, 'scheda')">SCHEDA DETTAGLIO</li>
+            </ul>
 
-        <div id="selezione" class="tab-content-item">
-            <h4 style="margin-top: 10px;">Seleziona una riga per modificarla o visualizzarla</h4>
-            <div class="table-container" style="max-height: 60vh; overflow-y: auto; border: 1px solid #ddd; margin-top: 5px;">
-                <table class="selectable-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 15%;">Mastro</th>
-                            <th style="width: 15%;">SMastro</th>
-                            <th>Descrizione Categoria</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($row = $lista->fetch_assoc()): 
-                            $selected_class = ($edit_id == $row['ID']) ? 'selected-row' : '';
-                            $bold_style = ($row['TM_SMastro'] == 0) ? 'font-weight: bold; background-color: #f2f2f2;' : '';
-                        ?>
-                            <tr class="<?php echo $selected_class; ?>" style="<?php echo $bold_style; ?>" 
-                                onclick="window.location.href='ta_mag.php?edit=<?php echo $row['ID']; ?>&tab=scheda'">
-                                <td><?php echo $row['TM_Mastro']; ?></td>
-                                <td><?php echo $row['TM_SMastro']; ?></td>
-                                <td><?php echo htmlspecialchars($row['TM_Descrizione']); ?></td>
+            <div id="selezione" class="tab-content <?php echo ($active_tab == 'selezione') ? 'active' : ''; ?>">
+                <div class="table-container">
+                    <table class="selectable-table table-fixed-layout">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">Mastro</th>
+                                <th style="width: 80px; text-align: center;">SMastro</th>
+                                <th class="col-auto">Descrizione Categoria</th>
                             </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php while ($row = $lista->fetch_assoc()): 
+                                $selected_class = ($edit_id == $row['ID']) ? 'selected-row' : '';
+                                // Stile per evidenziare i Mastri (SMastro = 0)
+                                $mastro_style = ($row['TM_SMastro'] == 0) ? 'font-weight: bold; background-color: #f9f9f9;' : '';
+                            ?>
+                                <tr class="<?php echo $selected_class; ?>" style="<?php echo $mastro_style; ?>" 
+                                    onclick="window.location.href='ta_mag.php?edit=<?php echo $row['ID']; ?>&tab=scheda'">
+                                    <td style="text-align: center;"><?php echo $row['TM_Mastro']; ?></td>
+                                    <td style="text-align: center;"><?php echo $row['TM_SMastro']; ?></td>
+                                    <td class="col-auto">
+                                        <?php if($row['TM_SMastro'] > 0) echo "&nbsp;&nbsp;↳ "; ?>
+                                        <?php echo htmlspecialchars($row['TM_Descrizione']); ?>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-inserisci" style="margin-top: 15px; width: 250px;" onclick="window.location.href='ta_mag.php?tab=scheda'">+ NUOVA CATEGORIA</button>
             </div>
-            <button class="btn btn-inserisci btn-grande" style="margin-top: 15px;" onclick="window.location.href='ta_mag.php?tab=scheda'">+ NUOVA CATEGORIA / MASTRO</button>
-        </div>
 
-        <div id="scheda" class="tab-content-item">
-            <div class="form-container" style="margin-top: 10px; border: 2px solid #008CBA;">
-                <h3><?php echo $edit_id ? "Modifica Record ID: $edit_id" : "Inserimento Nuovo Record"; ?></h3>
-                <form action="ta_mag.php" method="post">
-                    <input type="hidden" name="id" value="<?php echo $row_edit['ID'] ?? ''; ?>">
-                    
-                    <div class="form-group-flex">
-                        <div class="form-group">
-                            <label>Cod. Mastro (1-99):</label>
-                            <input type="number" name="tm_mastro" min="1" max="99" value="<?php echo $row_edit['TM_Mastro'] ?? ''; ?>" required>
+            <div id="scheda" class="tab-content <?php echo ($active_tab == 'scheda') ? 'active' : ''; ?>">
+                <div class="form-container" style="border-color: #008CBA;">
+                    <h3 style="margin-top:0;"><?php echo $edit_id ? "Modifica Record ID: $edit_id" : "Inserimento Nuova Categoria"; ?></h3>
+                    <form action="ta_mag.php" method="post">
+                        <input type="hidden" name="id" value="<?php echo $row_edit['ID'] ?? ''; ?>">
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Cod. Mastro (1-99):</label>
+                                <input type="number" name="tm_mastro" min="1" max="99" value="<?php echo $row_edit['TM_Mastro'] ?? ''; ?>" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Cod. Sottomastro (0 = Mastro):</label>
+                                <input type="number" name="tm_smastro" min="0" max="99" value="<?php echo $row_edit['TM_SMastro'] ?? '0'; ?>">
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <label>Cod. Sottomastro (0 = Mastro):</label>
-                            <input type="number" name="tm_smastro" min="0" max="99" value="<?php echo $row_edit['TM_SMastro'] ?? '0'; ?>">
+                            <label>Descrizione Categoria:</label>
+                            <input type="text" name="tm_descrizione" maxlength="60" value="<?php echo htmlspecialchars($row_edit['TM_Descrizione'] ?? ''); ?>" required>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Descrizione:</label>
-                        <input type="text" name="tm_descrizione" maxlength="60" value="<?php echo htmlspecialchars($row_edit['TM_Descrizione'] ?? ''); ?>" required>
-                    </div>
+                        <div class="form-group">
+                            <label>Note aggiuntive:</label>
+                            <textarea name="tm_note" maxlength="500" rows="4"><?php echo htmlspecialchars($row_edit['TM_Note'] ?? ''); ?></textarea>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Note aggiuntive:</label>
-                        <textarea name="tm_note" maxlength="500" rows="4"><?php echo htmlspecialchars($row_edit['TM_Note'] ?? ''); ?></textarea>
-                    </div>
-
-                    <div class="form-group" style="margin-top: 15px;">
-                        <button type="submit" name="salva_mag" class="btn btn-inserisci btn-grande">SALVA DATI</button>
-                        <?php if($edit_id): ?>
-                            <a href="ta_mag.php" class="btn btn-elimina btn-grande">ANNULLA / NUOVO</a>
-                        <?php endif; ?>
-                    </div>
-                </form>
+                        <div class="btn-group-form" style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" name="salva_mag" class="btn btn-salva" style="flex: 1;">SALVA DATI</button>
+                            <?php if($edit_id): ?>
+                                <a href="ta_mag.php" class="btn btn-annulla" style="flex: 1;">ANNULLA / NUOVO</a>
+                            <?php endif; ?>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+        <div class="versione-info">Versione: <?php echo FILE_VERSION; ?></div>
     </div>
 
     <div class="right-column"></div>
 </main>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function openTab(evt, tabName) {
-    document.querySelectorAll('.tab-content-item').forEach(item => item.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(tabName).classList.add('active');
-    if(evt) evt.currentTarget.classList.add('active');
+    $('.tab-content').hide();
+    $('.tab-link').removeClass('active');
+    $('#' + tabName).show();
+    if(evt) $(evt.currentTarget).addClass('active');
 }
 
-// Inizializzazione Tab
-document.addEventListener("DOMContentLoaded", function() {
+$(document).ready(function() {
     const activeTab = '<?php echo $active_tab; ?>';
-    const btn = document.getElementById('tab-' + activeTab);
-    if(btn) btn.click();
+    if(activeTab) {
+        $('.tab-content').hide();
+        $('#' + activeTab).show();
+        $('.tab-link').removeClass('active');
+        $('#tab-link-' + activeTab).addClass('active');
+    }
 });
 </script>
 
-<style>
-    .selected-row { background-color: #cceeff !important; font-weight: bold; }
-    .tab-nav { display: flex; border-bottom: 2px solid #ccc; margin-top: 10px; }
-    .tab-button { flex: 1; padding: 10px; font-weight: bold; cursor: pointer; border: none; background: #f0f0f0; transition: 0.2s; }
-    .tab-button.active { background: #008CBA; color: white; }
-    .tab-content-item { display: none; padding: 10px 0; }
-    .tab-content-item.active { display: block; }
-</style>
-
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once TPL_PATH . 'footer.php'; ?>
