@@ -1,4 +1,4 @@
-﻿<nav>
+<nav>
     <ul>
         <li><a href="<?php echo url('index.php'); ?>">Home</a></li>
         
@@ -16,7 +16,32 @@
             <a href="javascript:void(0)" class="dropbtn">Inserimenti</a>
             <div class="dropdown-content">
                 <a href="<?php echo url('mobile.php'); ?>">📱 Inserisci Attività</a>
-                <a href="<?php echo url('spostamenti.php'); ?>">🚚 Spostamento Arnie</a>
+                <a href="<?php echo url('spostamento.php'); ?>">🚚 Spostamento Arnie</a>
+            </div>
+        </li>
+
+        <li class="dropdown">
+            <a href="javascript:void(0)" class="dropbtn">Magazzino</a>
+            <div class="dropdown-content">
+                <a href="<?php echo url('pages/ta_mag.php'); ?>">Tabelle Magazzino</a>
+                <a href="<?php echo url('pages/ma_articoli.php'); ?>">Articoli</a>
+                <a href="<?php echo url('pages/ma_movimenti.php'); ?>">Movimenti Magazzino</a>
+            </div>
+        </li>
+
+        <li class="dropdown">
+            <a href="javascript:void(0)" class="dropbtn">Gestione Arnie</a>
+            <div class="dropdown-content">
+                <a href="<?php echo url('pages/arnie.php'); ?>">Arnie</a>
+                <a href="<?php echo url('pages/gestatt.php'); ?>">Gestione attività</a>
+            </div>
+        </li>
+
+        <li class="dropdown">
+            <a href="javascript:void(0)" class="dropbtn">Gestione Spostamenti</a>
+            <div class="dropdown-content">
+                <a href="<?php echo url('pages/disposizione_apiari.php'); ?>">Disposizione Apiari</a>
+                <a href="<?php echo url('pages/storico_spostamenti.php'); ?>">Storico spostamenti</a>
             </div>
         </li>
 
@@ -28,18 +53,5 @@
                 <a href="<?php echo url('pages/scadenziario.php'); ?>">Scadenziario</a>
             </div>
         </li>
-
-      <li class="dropdown">
-    <a href="javascript:void(0)" class="dropbtn">Magazzino</a>
-    <div class="dropdown-content">
-        <a href="<?php echo url('pages/ta_mag.php'); ?>">Tabelle Magazzino</a>
-        <a href="<?php echo url('pages/ma_articoli.php'); ?>">Articoli</a>
-        <a href="<?php echo url('pages/ma_movimenti.php'); ?>">Movimenti Magazzino</a>
-    </div>
-</li>
-        
-        <li><a href="<?php echo url('pages/arnie.php'); ?>">Arnie</a></li> 
-        <li><a href="<?php echo url('pages/gestatt.php'); ?>">Gestione Attività</a></li>
-        <li><a href="<?php echo url('pages/storico_spostamenti.php'); ?>">Storico Spostamenti</a></li>
     </ul>
 </nav>
