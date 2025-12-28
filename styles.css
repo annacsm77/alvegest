@@ -1,0 +1,283 @@
+/* ==========================================================================
+   ALVEGEST - STYLES.CSS UNIFICATO (V.B.0.8.6)
+   ========================================================================== */
+
+/* RESET GLOBALE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+               
+               
+               
+:root {
+    --primary-bg: #e12326;    /* Rosso AlveGest */
+    --secondary-bg: #472014;  /* Marrone scuro Menu */
+    --form-bg: #fff3e2;       /* Crema Form */
+    --tab-inactive: #f1e4d1;  /* Beige Tab/Tabelle */
+    --main-text: #ffffff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 1. Impostazione altezza minima e layout per il contenitore principale */
+.main-content, main-content.flex-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    min-height: 100vh; /* Altezza schermo intero */
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0; /* Sfondo generale per far risaltare i riquadri */
+}
+
+/* 2. Colonne laterali in grigio chiaro e altezza 100% */
+.left-column, .right-column {
+    flex: 0 0 100px !important;
+    min-width: 100px !important;
+    background-color: #e0e0e0 !important; /* Grigino chiaro */
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    min-height: 100vh; /* Forza l'altezza anche se vuote */
+}
+
+/* 3. Riquadro per la Home Page (index.php) */
+/* Analizzando le altre "pages", il contenuto è racchiuso in un box bianco bordato */
+.center-column {
+    flex: 1 !important;
+    background-color: #fff; /* Fondo bianco per il riquadro */
+    margin: 10px;           /* Crea l'effetto riquadro staccato dai bordi */
+    padding: 10px;
+    border: 1px solid #ddd; /* Bordo sottile */
+    border-radius: 8px;     /* Angoli arrotondati come le altre pagine */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Ombra leggera per profondità */
+    min-height: calc(100vh - 40px); /* Altezza schermo meno i margini */
+    display: block;
+    overflow: visible;
+}
+
+
+h2 {
+    display: block; 
+    font-size: 1 em;
+    padding 5;
+    margin-block-start: 0.83em; 
+    margin-block-end: 0.83em; 
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+    color: #e12326 !important;
+}
+
+main h2 {
+    scroll-margin-top: 100px; /* Se c'è un'ancora, si ferma prima del menu */
+}
+
+
+
+/* --- HEADER E MENU --- */
+header { background-color: var(--primary-bg); color: var(--main-text); text-align: center; padding: 0;}
+header h1 { padding: 15px 0 !important; font-size: 1.5rem; text-transform: uppercase; }
+
+nav { background-color: var(--secondary-bg); width: 100%; position: relative; z-index: 1000; }
+nav ul { list-style-type: none; display: flex; justify-content: flex-start; }
+
+nav ul li a, .dropdown .dropbtn {
+    display: block; 
+    color: var(--main-text);
+    padding: 10px 20px !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 220px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+}
+.dropdown-content a {
+    color: #333 !important;
+    padding: 12px 16px !important;
+    text-align: left !important;
+    display: block !important; 
+    border-bottom: 1px solid #eee;
+}
+.dropdown:hover .dropdown-content { display: block; }
+
+/* --- SISTEMA TAB (FIX DEFINITIVO) --- */
+.tabs-container { width: 100%; margin-top: 20px; }
+.tabs-menu { display: flex; list-style: none; border-bottom: 2px solid var(--primary-bg); }
+
+.tab-link {
+    background-color: var(--tab-inactive);
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    font-weight: bold;
+    margin-right: 2px;
+    color: #333;
+}
+.tab-link.active {
+    background-color: var(--primary-bg) !important;
+    color: white !important;
+    border-color: var(--primary-bg);
+}
+
+/* Nota: rimosso !important da qui per permettere al JS di funzionare */
+.tab-content { 
+    display: none; 
+    padding: 20px; 
+    border: 1px solid #ccc; 
+    border-top: none; 
+    background: #fff;
+}
+.tab-content.active { 
+    display: block; 
+}
+
+.tab-content, .tab-pane {
+    display: none;
+}
+.tab-content.active, .tab-pane.active {
+    display: block;
+    animation: none !important; /* Rimuove eventuali animazioni che causano lo spostamento */
+}
+
+
+/* --- TABELLE --- */
+.table-container { width: 100%; margin-top: 10px; }
+table { width: 100%; border-collapse: collapse; }
+th { 
+    background-color: var(--tab-inactive); 
+    border: 1px solid #ccc; 
+    padding: 10px;
+    text-align: left;
+    color: #333;
+}
+td { border: 1px solid #ccc; padding: 8px; background-color: #fff; }
+
+
+.filtri-container{    
+        margin:10px 0px 10px 0px ; 
+        padding: 5px;
+}
+
+
+/* --- PULSANTI E FEEDBACK (FIX VISIBILITÀ) --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;                                                    
+    height: 32px;
+    padding: 0 5px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    color: white; /* Testo base bianco */
+}
+
+
+/* Colori forzati per i vari tipi di pulsante */
+.btn-salva, .btn-inserisci, .btn-cerca, .btn-modifica, .btn-elimina, .btn-annulla, .btn-reset {
+    color: white !important;
+}
+
+.btn-salva, .btn-inserisci, .btn-cerca { background-color: #28a745 !important; }
+.btn-modifica { background-color: #ffc107 !important; color: #333 !important; } /* Giallo con testo nero */
+.btn-elimina { background-color: #dc3545 !important; }
+.btn-annulla, .btn-reset { background-color: #6c757d !important; }
+.btn-attivita, .btn-stampa { background-color: #9dbd31 !important; }
+
+/* Icone FontAwesome */
+.btn::before { font-family: "Font Awesome 6 Free"; font-weight: 900; margin-right: 8px; }
+.btn-salva::before, .btn-inserisci::before, .btn-cerca::before { content: "\f0c7"; }
+.btn-modifica::before { content: "\f303"; }
+.btn-elimina::before { content: "\f2ed"; }
+.btn-reset::before { content: "\f2f1"; }
+
+/* --- FORM E INPUT --- */
+.form-container {
+    background-color: var(--form-bg);
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+
+
+.form-group label { display: block; font-weight: bold; margin-bottom: 5px; margin-top: 5px; color: #333; }
+.form-group input, .form-group select, .form-group textarea, .form-group checkbox   {
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 100%;
+    /*background-color: #ffffff;
+}
+
+/* RIGHE PERICOLO */
+tr.riga-pericolo td { background-color: #ffe6e6 !important; color: #b94a48 !important; }
+
+
+/* ==========================================================================
+   SEZIONE WIDGET - BORDO VISIBILE E RIDIMENSIONAMENTO
+   ========================================================================== */
+
+.widget-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+    padding: 20px !important;
+}
+
+/* Qui uniamo le classi: il punto davanti è fondamentale */
+.widget-card.draggable {
+    background-color: #ffffff !important;
+    /* BORDO MOLTO VISIBILE */
+    border: 4px solid #333333 !important; 
+    border-radius: 15px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    
+    /* ABILITA RIDIMENSIONAMENTO */
+    resize: both !important;
+    overflow: auto !important;
+    
+    min-width: 280px !important;
+    min-height: 220px !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.widget-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 2px solid #eeeeee !important;
+    margin-bottom: 15px !important;
+    padding-bottom: 10px !important;
+}
+
+.drag-handle {
+    cursor: move !important;
+    font-size: 1.5rem !important;
+    color: #666 !important;
+}
+
+/* Colore della maniglia di ridimensionamento in basso a destra */
+.widget-card::-webkit-resizer {
+    background-color: #333;
+    border: 3px solid #fff;
+}
