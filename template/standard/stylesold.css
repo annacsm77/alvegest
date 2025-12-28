@@ -1,0 +1,129 @@
+/* ==========================================================================
+   ALVEGEST - CSS UNIFICATO PER TEMPLATE
+   ========================================================================== */
+
+:root {
+    /* Tavolozza Colori */
+    --primary-color: #ffcc00;    /* Giallo Alveare */
+    --secondary-color: #333333;  /* Testo scuro */
+    --accent-color: #e67e22;     /* Arancione miele per dettagli */
+    --bg-color: #f4f4f4;         /* Sfondo grigio chiaro */
+    --white: #ffffff;
+    --error-color: #e74c3c;      /* Rosso per avvisi */
+    --success-color: #2ecc71;    /* Verde per conferme */
+
+    /* Spaziature e Bordi */
+    --border-radius: 8px;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+/* 1. Reset e Base */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--secondary-color);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* 2. Layout Comune */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+/* 3. Tipografia */
+h1, h2, h3 {
+    color: var(--secondary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+}
+
+/* 4. Form e Input (Uniformati per tutte le pagine) */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: -10px;
+}
+
+input[type="text"], 
+input[type="password"], 
+input[type="email"], 
+input[type="number"], 
+select, 
+textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    transition: var(--transition);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+}
+
+/* 5. Pulsanti Uniformati */
+input[type="submit"], 
+button, 
+.btn {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    transition: var(--transition);
+}
+
+input[type="submit"]:hover, 
+button:hover {
+    background-color: #e5b800; /* Giallo un po' più scuro */
+    transform: translateY(-2px);
+}
+
+/* 6. Tabelle (Per visualizzazione arnie e dati) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background-color: #fff9e6;
+}
+
+/* 7. Classi di utilità */
+.text-center { text-align: center; }
+.error { color: var(--error-color); font-weight: bold; }
+.success { color: var(--success-color); font-weight: bold; }
