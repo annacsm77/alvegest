@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Creato il: Dic 23, 2025 alle 11:02
+-- Creato il: Dic 28, 2025 alle 12:36
 -- Versione del server: 10.11.6-MariaDB
 -- Versione PHP: 8.2.21
 
@@ -97,6 +97,22 @@ CREATE TABLE `CF_GLOB` (
   `CF_DATO` varchar(20) NOT NULL,
   `CF_VAL` varchar(500) NOT NULL,
   `CF_DESCR` varchar(250) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `CF_WIDGET_POS`
+--
+
+CREATE TABLE `CF_WIDGET_POS` (
+  `WP_ID` int(11) NOT NULL,
+  `WP_WIDGET_NAME` varchar(100) NOT NULL,
+  `WP_ORDINE` int(11) NOT NULL DEFAULT 0,
+  `WP_WIDTH` varchar(20) DEFAULT '300px',
+  `WP_HEIGHT` varchar(20) DEFAULT '250px',
+  `WP_X` varchar(20) DEFAULT '0px',
+  `WP_Y` varchar(20) DEFAULT '0px'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -301,6 +317,13 @@ ALTER TABLE `CF_GLOB`
   ADD UNIQUE KEY `CF_DATO_UNIQUE` (`CF_DATO`);
 
 --
+-- Indici per le tabelle `CF_WIDGET_POS`
+--
+ALTER TABLE `CF_WIDGET_POS`
+  ADD PRIMARY KEY (`WP_ID`),
+  ADD UNIQUE KEY `WP_WIDGET_NAME` (`WP_WIDGET_NAME`);
+
+--
 -- Indici per le tabelle `MA_Articoli`
 --
 ALTER TABLE `MA_Articoli`
@@ -413,6 +436,12 @@ ALTER TABLE `AT_INSATT`
 --
 ALTER TABLE `CF_GLOB`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT per la tabella `CF_WIDGET_POS`
+--
+ALTER TABLE `CF_WIDGET_POS`
+  MODIFY `WP_ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT per la tabella `MA_Articoli`
