@@ -1,91 +1,126 @@
 ﻿<?php
-// Versione del file per il debug
-$versione = "H.0.1"; 
-
+// Versione del file: H.0.8 (Movimento Vincolato all'area)
 include 'includes/config.php'; 
-// Recuperiamo qui i dati per l'header, che includerà header.php
+include TPL_PATH . 'header.php'; 
 ?>
 
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Apiario - Dashboard</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-<header>
-    <?php include TPL_PATH . 'header.php'; ?>
-</header>
+<div class="main-content flex-layout">
+    <div class="left-column"></div>
+    <div class="center-column">
+        <main>
+            <h2>Dashboard Apiario</h2>
+            <div class="widget-grid" id="grid-container" style="position: relative; width: 100%; min-height: 85vh; padding: 20px; border: 1px dashed #ccc; overflow: hidden;">
+                <?php
+                $config_widgets = [];
+                $res_pos = $conn->query("SELECT * FROM CF_WIDGET_POS");
+                if ($res_pos) {
+                    while($row = $res_pos->fetch_assoc()){
+                        $config_widgets[$row['WP_WIDGET_NAME']] = $row;
+                    }
+                }
 
-    <div class="main-content">
-        <div class="left-column"></div>
-
-        <div class="center-column">
-            <main>
-                <h2>Dashboard Apiario</h2>
-                <p>Panoramica Rapida V.<?php echo $versione; ?></p>
-                
-                <div class="widget-grid">
-                    <?php
-                    
-                    // --- WIDGET 1: TOTALE ARNIE ATTIVE ---
-                    $sql_tot_arnie = "SELECT COUNT(AR_ID) AS total FROM AP_Arnie WHERE AR_ATTI = 0";
-                    $result_tot_arnie = $conn->query($sql_tot_arnie);
-                    $tot_arnie = $result_tot_arnie ? $result_tot_arnie->fetch_assoc()['total'] : 0;
-                    ?>
-                    <div class="widget-card">
-                        <h4>Arnie Attive</h4>
-                        <div class="value"><?php echo $tot_arnie; ?></div>
-                        <a href="<?php echo url('pages/arnie.php'); ?>" class="btn-widget">Visualizza Elenco</a>
-                    </div>
-
-                    <?php
-                    // --- WIDGET 2: TOTALE APIARI (LUOGHI) ---
-                    $sql_tot_apiari = "SELECT COUNT(AI_ID) AS total FROM TA_Apiari";
-                    $result_tot_apiari = $conn->query($sql_tot_apiari);
-                    $tot_apiari = $result_tot_apiari ? $result_tot_apiari->fetch_assoc()['total'] : 0;
-                    ?>
-                    <div class="widget-card">
-                        <h4>Apiari Registrati</h4>
-                        <div class="value"><?php echo $tot_apiari; ?></div>
-                        <a href="<?php echo url('pages/apiari.php'); ?>" class="btn-widget">Gestione Luoghi</a>
-                    </div>
-                    
-                    <?php
-                    // --- WIDGET 3: ULTIMA ATTIVITÀ REGISTRATA ---
-                    $sql_last_act = "
-                        SELECT 
-                            IA.IA_DATA, 
-                            A.AR_NOME
-                        FROM AT_INSATT IA
-                        JOIN AP_Arnie A ON IA.IA_CodAr = A.AR_ID
-                        ORDER BY IA.IA_DATA DESC, IA.IA_ID DESC 
-                        LIMIT 1";
-                    $result_last_act = $conn->query($sql_last_act);
-                    $last_act = $result_last_act && $result_last_act->num_rows > 0 ? $result_last_act->fetch_assoc() : null;
-                    
-                    $data_ultima = $last_act ? date('d/m/Y', strtotime($last_act['IA_DATA'])) : 'N/A';
-                    $nome_arnia = $last_act ? htmlspecialchars($last_act['AR_NOME']) : 'N/A';
-                    ?>
-                    <div class="widget-card">
-                        <h4>Ultima Attività</h4>
-                        <div class="value" style="font-size: 1.5em;"><?php echo $data_ultima; ?></div>
-                        <p style="margin: 0; font-size: 0.9em; color: #666;">Su arnia: <?php echo $nome_arnia; ?></p>
-                        <a href="<?php echo url('pages/gestatt.php'); ?>" class="btn-widget">Storico Completo</a>
-                    </div>
-
-                </div>
-            </main>
-        </div>
-
-        <div class="right-column"></div>
+                $widget_folder = __DIR__ . '/widgets/';
+                if (is_dir($widget_folder)) {
+                    $all_files = glob($widget_folder . "*.php");
+                    foreach ($all_files as $file) {
+                        $p_name = basename($file);
+                        $w_width  = $config_widgets[$p_name]['WP_WIDTH'] ?? '300px';
+                        $w_height = $config_widgets[$p_name]['WP_HEIGHT'] ?? '250px';
+                        $w_x      = $config_widgets[$p_name]['WP_X'] ?? '10px';
+                        $w_y      = $config_widgets[$p_name]['WP_Y'] ?? '10px';
+                        include($file);
+                    }
+                }
+                ?>
+            </div>
+        </main>
     </div>
+    <div class="right-column"></div>
+</div>
 
-<footer>
-    <?php include TPL_PATH . 'footer.php'; ?>
-</footer>
+<footer><?php include TPL_PATH . 'footer.php'; ?></footer>
 
-</body>
-</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let activeWidget = null;
+    let startX, startY, initialLeft, initialTop;
+    const grid = document.getElementById('grid-container');
+
+    function salvaStato(widget) {
+        const dati = {
+            file: widget.getAttribute('data-filename'),
+            width: widget.style.width || (widget.offsetWidth + 'px'),
+            height: widget.style.height || (widget.offsetHeight + 'px'),
+            x: widget.style.left,
+            y: widget.style.top
+        };
+        fetch('includes/ajax/save_widget_order.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dati)
+        });
+    }
+
+    document.addEventListener('mousedown', function(e) {
+        if (e.target.classList.contains('drag-handle')) {
+            activeWidget = e.target.closest('.widget-card');
+            if (activeWidget) {
+                startX = e.clientX;
+                startY = e.clientY;
+                initialLeft = parseInt(activeWidget.style.left) || 0;
+                initialTop = parseInt(activeWidget.style.top) || 0;
+                activeWidget.style.zIndex = 1000;
+                e.preventDefault();
+            }
+        }
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!activeWidget) return;
+
+        let deltaX = e.clientX - startX;
+        let deltaY = e.clientY - startY;
+
+        // Calcolo nuova posizione potenziale [cite: 2025-11-21]
+        let newX = initialLeft + deltaX;
+        let newY = initialTop + deltaY;
+
+        // LIMITI DI AREA (CONTAINMENT) [cite: 2025-11-21]
+        // Impedisce di uscire a sinistra e in alto
+        if (newX < 0) newX = 0;
+        if (newY < 0) newY = 0;
+
+        // Impedisce di uscire a destra e in basso rispetto alla griglia
+        const maxRight = grid.clientWidth - activeWidget.offsetWidth;
+        const maxBottom = grid.clientHeight - activeWidget.offsetHeight;
+
+        if (newX > maxRight) newX = maxRight;
+        if (newY > maxBottom) newY = maxBottom;
+
+        activeWidget.style.left = newX + 'px';
+        activeWidget.style.top = newY + 'px';
+    });
+
+    document.addEventListener('mouseup', function() {
+        if (activeWidget) {
+            salvaStato(activeWidget);
+            activeWidget.style.zIndex = 100;
+            activeWidget = null;
+        }
+    });
+
+    const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+            if (window.resizeInitDone) {
+                clearTimeout(window.resizeTimeout);
+                window.resizeTimeout = setTimeout(() => {
+                    salvaStato(entry.target);
+                }, 1000);
+            }
+        }
+    });
+
+    document.querySelectorAll('.widget-card').forEach(w => resizeObserver.observe(w));
+    setTimeout(() => { window.resizeInitDone = true; }, 1000);
+});
+</script>
