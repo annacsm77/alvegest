@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Creato il: Gen 07, 2026 alle 17:05
+-- Creato il: Gen 17, 2026 alle 10:21
 -- Versione del server: 10.11.6-MariaDB
 -- Versione PHP: 8.2.21
 
@@ -46,6 +46,7 @@ CREATE TABLE `AP_Arnie` (
   `AR_ID` int(11) NOT NULL,
   `AR_CODICE` int(11) NOT NULL,
   `AR_NOME` varchar(60) NOT NULL,
+  `AR_TIPA` int(11) DEFAULT NULL,
   `AR_LUOGO` int(11) DEFAULT NULL,
   `AR_posizione` int(11) NOT NULL DEFAULT 0,
   `AR_PROP` varchar(60) NOT NULL,
@@ -178,6 +179,20 @@ CREATE TABLE `TA_Apicoltore` (
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `TA_APIFIO`
+--
+
+CREATE TABLE `TA_APIFIO` (
+  `FA_Id` int(11) NOT NULL,
+  `FA_CodFio` int(11) NOT NULL COMMENT 'FK a TA_Fioriture.FI_id',
+  `FA_COD_API` int(11) NOT NULL COMMENT 'FK a TA_Apiari.AI_ID',
+  `FA_inizio` date DEFAULT NULL,
+  `FA_fine` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `TA_ARTICOLI`
 --
 
@@ -211,6 +226,18 @@ CREATE TABLE `TA_Attivita` (
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `TA_Fioriture`
+--
+
+CREATE TABLE `TA_Fioriture` (
+  `FI_id` int(11) NOT NULL,
+  `FI_CODICE` varchar(4) NOT NULL,
+  `FI_Note` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `TA_InsAtt`
 --
 
@@ -231,6 +258,19 @@ CREATE TABLE `TA_MAG` (
   `TM_SMastro` int(2) NOT NULL DEFAULT 0 COMMENT 'Sottocategoria (0 se è un Mastro)',
   `TM_Descrizione` varchar(60) NOT NULL,
   `TM_Note` varchar(500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `TA_TIPA`
+--
+
+CREATE TABLE `TA_TIPA` (
+  `TI_id` int(11) NOT NULL,
+  `TI_CODICE` varchar(4) NOT NULL COMMENT 'Codice univoco 4 lettere',
+  `TI_DESCR` varchar(60) NOT NULL COMMENT 'Descrizione tipologia',
+  `TI_Note` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -294,7 +334,8 @@ ALTER TABLE `AI_SPOS`
 --
 ALTER TABLE `AP_Arnie`
   ADD PRIMARY KEY (`AR_ID`),
-  ADD KEY `FK_Arnie_Apiari` (`AR_LUOGO`);
+  ADD KEY `FK_Arnie_Apiari` (`AR_LUOGO`),
+  ADD KEY `FK_Arnie_Tipologia` (`AR_TIPA`);
 
 --
 -- Indici per le tabelle `AT_FOTO`
@@ -353,6 +394,14 @@ ALTER TABLE `TA_Apicoltore`
   ADD PRIMARY KEY (`AP_ID`);
 
 --
+-- Indici per le tabelle `TA_APIFIO`
+--
+ALTER TABLE `TA_APIFIO`
+  ADD PRIMARY KEY (`FA_Id`),
+  ADD KEY `fk_fio_anag` (`FA_CodFio`),
+  ADD KEY `fk_fio_apiari` (`FA_COD_API`);
+
+--
 -- Indici per le tabelle `TA_ARTICOLI`
 --
 ALTER TABLE `TA_ARTICOLI`
@@ -368,6 +417,13 @@ ALTER TABLE `TA_Attivita`
   ADD KEY `FK_ATTIVITA_MAG` (`AT_MAG_ID`);
 
 --
+-- Indici per le tabelle `TA_Fioriture`
+--
+ALTER TABLE `TA_Fioriture`
+  ADD PRIMARY KEY (`FI_id`),
+  ADD UNIQUE KEY `FI_CODICE_UNIQUE` (`FI_CODICE`);
+
+--
 -- Indici per le tabelle `TA_InsAtt`
 --
 ALTER TABLE `TA_InsAtt`
@@ -380,6 +436,13 @@ ALTER TABLE `TA_InsAtt`
 ALTER TABLE `TA_MAG`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `UK_MASTRO_SM` (`TM_Mastro`,`TM_SMastro`);
+
+--
+-- Indici per le tabelle `TA_TIPA`
+--
+ALTER TABLE `TA_TIPA`
+  ADD PRIMARY KEY (`TI_id`),
+  ADD UNIQUE KEY `TI_CODICE_UNIQUE` (`TI_CODICE`);
 
 --
 -- Indici per le tabelle `TR_FFASE`
@@ -470,6 +533,12 @@ ALTER TABLE `TA_Apicoltore`
   MODIFY `AP_ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT per la tabella `TA_APIFIO`
+--
+ALTER TABLE `TA_APIFIO`
+  MODIFY `FA_Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT per la tabella `TA_ARTICOLI`
 --
 ALTER TABLE `TA_ARTICOLI`
@@ -482,6 +551,12 @@ ALTER TABLE `TA_Attivita`
   MODIFY `AT_ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT per la tabella `TA_Fioriture`
+--
+ALTER TABLE `TA_Fioriture`
+  MODIFY `FI_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT per la tabella `TA_InsAtt`
 --
 ALTER TABLE `TA_InsAtt`
@@ -492,6 +567,12 @@ ALTER TABLE `TA_InsAtt`
 --
 ALTER TABLE `TA_MAG`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT per la tabella `TA_TIPA`
+--
+ALTER TABLE `TA_TIPA`
+  MODIFY `TI_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT per la tabella `TR_FFASE`
@@ -526,7 +607,8 @@ ALTER TABLE `AI_SPOS`
 -- Limiti per la tabella `AP_Arnie`
 --
 ALTER TABLE `AP_Arnie`
-  ADD CONSTRAINT `FK_Arnie_Apiari` FOREIGN KEY (`AR_LUOGO`) REFERENCES `TA_Apiari` (`AI_ID`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_Arnie_Apiari` FOREIGN KEY (`AR_LUOGO`) REFERENCES `TA_Apiari` (`AI_ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Arnie_Tipologia` FOREIGN KEY (`AR_TIPA`) REFERENCES `TA_TIPA` (`TI_id`) ON UPDATE CASCADE;
 
 --
 -- Limiti per la tabella `AT_FOTO`
@@ -551,6 +633,13 @@ ALTER TABLE `MA_Articoli`
 --
 ALTER TABLE `MA_MOVI`
   ADD CONSTRAINT `FK_MOVI_MAG` FOREIGN KEY (`MV_MAG_ID`) REFERENCES `TA_MAG` (`ID`) ON UPDATE CASCADE;
+
+--
+-- Limiti per la tabella `TA_APIFIO`
+--
+ALTER TABLE `TA_APIFIO`
+  ADD CONSTRAINT `fk_fio_anag` FOREIGN KEY (`FA_CodFio`) REFERENCES `TA_Fioriture` (`FI_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_fio_apiari` FOREIGN KEY (`FA_COD_API`) REFERENCES `TA_Apiari` (`AI_ID`) ON UPDATE CASCADE;
 
 --
 -- Limiti per la tabella `TA_Attivita`
