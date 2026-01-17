@@ -1,6 +1,6 @@
 <?php
 // DEFINIZIONE VERSIONE FILE
-define('FILE_VERSION', 'D.0.3 (Layout a Tab per Apiario)');
+define('FILE_VERSION', 'D.0.6 (Stile da CSS esterno)');
 
 require_once '../includes/config.php';
 require_once TPL_PATH . 'header.php'; 
@@ -22,21 +22,22 @@ if ($res_apiari && $res_apiari->num_rows > 0) {
         ];
     }
 
-    // 2. Recuperiamo tutte le arnie attive con il loro stato di pericolo
-    $sql_arnie = "SELECT arn.AR_ID, arn.AR_CODICE, arn.AR_NOME, arn.AR_LUOGO,
+    // 2. Recuperiamo tutte le arnie attive ordinate per posizione
+    $sql_arnie = "SELECT arn.AR_ID, arn.AR_CODICE, arn.AR_NOME, arn.AR_LUOGO, arn.AR_posizione,
                   (SELECT i.IA_PERI 
                    FROM AT_INSATT i 
                    WHERE i.IA_CodAr = arn.AR_ID 
-                   ORDER BY i.IA_DATA DESC, i.IA_ID DESC 
-                   LIMIT 1) AS ultimo_pericolo
-                  FROM AP_Arnie arn 
-                  WHERE arn.AR_ATTI = 0 
-                  ORDER BY arn.AR_CODICE ASC";
+                   ORDER BY i.IA_DATA DESC, i.IA_ID DESC LIMIT 1) as ultimo_pericolo
+                  FROM AP_Arnie arn
+                  WHERE arn.AR_ATTI = 0
+                  ORDER BY arn.AR_posizione ASC, arn.AR_CODICE ASC";
     $res_arnie = $conn->query($sql_arnie);
 
-    while ($h = $res_arnie->fetch_assoc()) {
-        if (isset($apiari[$h['AR_LUOGO']])) {
-            $apiari[$h['AR_LUOGO']]['arnie'][] = $h;
+    if ($res_arnie && $res_arnie->num_rows > 0) {
+        while ($arn = $res_arnie->fetch_assoc()) {
+            if (isset($apiari[$arn['AR_LUOGO']])) {
+                $apiari[$arn['AR_LUOGO']]['arnie'][] = $arn;
+            }
         }
     }
 }
@@ -44,9 +45,8 @@ if ($res_apiari && $res_apiari->num_rows > 0) {
 
 <main class="main-content">
     <div class="left-column"></div>
-
     <div class="center-column">
-        <h2>Disposizione Apiari</h2>
+        <h2>Disposizione Arnie negli Apiari</h2>
 
         <?php if (!empty($apiari)): ?>
         <div class="tabs-container">
@@ -62,20 +62,26 @@ if ($res_apiari && $res_apiari->num_rows > 0) {
             <?php $first = true; foreach ($apiari as $id => $dati): ?>
                 <div id="apiario-<?php echo $id; ?>" class="tab-content <?php echo $first ? 'active' : ''; ?>">
                     <div class="table-container">
-                        <table class="selectable-table table-fixed-layout">
+                        <table class="table-disposizione" style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr>
-                                    <th class="col-cod">Codice</th>
-                                    <th class="col-auto">Nome Arnia / Stato</th>
+                                    <th style="width: 60px; text-align: center;">Pos.</th>
+                                    <th style="width: 100px; text-align: center;">Codice</th>
+                                    <th>Nome Arnia</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($dati['arnie'] as $arnia): 
-                                    $danger_class = ($arnia['ultimo_pericolo'] == 1) ? 'riga-pericolo' : '';
-                                ?>
-                                <tr class="<?php echo $danger_class; ?>">
-                                    <td class="col-cod"><strong><?php echo $arnia['AR_CODICE']; ?></strong></td>
-                                    <td class="col-auto">
+                                <?php foreach ($dati['arnie'] as $arnia): ?>
+                                <tr class="<?php echo ($arnia['ultimo_pericolo'] == 1) ? 'riga-pericolo' : ''; ?>">
+                                    <td style="text-align: center; font-weight: bold;">
+                                        <?php echo htmlspecialchars($arnia['AR_posizione']); ?>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <a href="gestatt.php?arnia_id=<?php echo $arnia['AR_ID']; ?>&tab=movimenti#tab-movimenti" class="link-gestatt">
+                                            <?php echo htmlspecialchars($arnia['AR_CODICE']); ?>
+                                        </a>
+                                    </td>
+                                    <td>
                                         <?php echo htmlspecialchars($arnia['AR_NOME']); ?>
                                         <?php if($arnia['ultimo_pericolo'] == 1): ?>
                                             <span style="float: right; font-weight: bold; color: #d9534f;">

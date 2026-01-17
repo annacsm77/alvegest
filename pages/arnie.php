@@ -1,6 +1,6 @@
 ﻿<?php
 // DEFINIZIONE VERSIONE FILE
-define('FILE_VERSION', 'V.0.1.4 (Fix Eliminazione a Cascata e Link Tab)');
+define('FILE_VERSION', 'V.0.1.7 (Integrazione Tipologia Arnia)');
 
 require_once '../includes/config.php';
 require_once TPL_PATH . 'header.php';
@@ -18,7 +18,10 @@ $query_string = "ricerca=" . urlencode($ricerca) . "&filtro_stato=" . urlencode(
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_post = $_POST["id"] ?? null;
     $atti = isset($_POST["atti"]) ? 1 : 0;
+    $attenz = isset($_POST["attenzione"]) ? 1 : 0;
     $nucl = isset($_POST["nucl"]) ? 1 : 0;
+    $posizione = !empty($_POST["posizione"]) ? (int)$_POST["posizione"] : 0;
+    $tipologia = !empty($_POST["tipologia_arnia"]) ? (int)$_POST["tipologia_arnia"] : null; // Recupero nuovo campo
     
     $prop = $_POST['prop'] ?? '';
     $creg = $_POST['creg'] ?? '';
@@ -34,30 +37,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         if (isset($_POST["salva"])) {
             if ($id_post) {
-                $sql = "UPDATE AP_Arnie SET AR_CODICE=?, AR_LUOGO=?, AR_DATA=?, AR_Note=?, AR_ATTI=?, AR_NUCL=?, AR_PROP=?, AR_CREG=?, AR_TREG=? WHERE AR_ID=?";
+                // Query UPDATE aggiornata con AR_TIPA
+                $sql = "UPDATE AP_Arnie SET AR_CODICE=?, AR_NOME=?, AR_LUOGO=?, AR_posizione=?, AR_DATA=?, AR_Note=?, AR_ATTI=?, AR_attenzione=?, AR_NUCL=?, AR_PROP=?, AR_CREG=?, AR_TREG=?, AR_TIPA=? WHERE AR_ID=?";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("sisssisssi", $_POST['codice'], $_POST['luogo'], $data_db, $_POST['note'], $atti, $nucl, $prop, $creg, $treg, $id_post);
+                $stmt->bind_param("ssiisssiiissii", $_POST['codice'], $_POST['nome_arnia'], $_POST['luogo'], $posizione, $data_db, $_POST['note'], $atti, $attenz, $nucl, $prop, $creg, $treg, $tipologia, $id_post);
             } else {
-                $sql = "INSERT INTO AP_Arnie (AR_CODICE, AR_LUOGO, AR_DATA, AR_Note, AR_ATTI, AR_NUCL, AR_PROP, AR_CREG, AR_TREG) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                // Query INSERT aggiornata con AR_TIPA
+                $sql = "INSERT INTO AP_Arnie (AR_CODICE, AR_NOME, AR_LUOGO, AR_posizione, AR_DATA, AR_Note, AR_ATTI, AR_attenzione, AR_NUCL, AR_PROP, AR_CREG, AR_TREG, AR_TIPA) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("sisssisss", $_POST['codice'], $_POST['luogo'], $data_db, $_POST['note'], $atti, $nucl, $prop, $creg, $treg);
+                $stmt->bind_param("ssiisssiiissi", $_POST['codice'], $_POST['nome_arnia'], $_POST['luogo'], $posizione, $data_db, $_POST['note'], $atti, $attenz, $nucl, $prop, $creg, $treg, $tipologia);
             }
             if ($stmt->execute()) {
                 header("Location: arnie.php?status=success&" . $query_string);
                 exit();
             }
         } elseif (isset($_POST["elimina"]) && $id_post) {
-            // --- ELIMINAZIONE A CASCATA BASATA SU SCHEMA SQL ---
-            // 1. Elimina record in TR_FFASE (Trattamenti)
             $conn->query("DELETE FROM TR_FFASE WHERE TF_ARNIA = $id_post");
-            
-            // 2. Elimina record in MA_MOVI (Movimenti Magazzino collegati all'arnia)
             $conn->query("DELETE FROM MA_MOVI WHERE MV_ARNIA_ID = $id_post");
-            
-            // 3. Elimina record in AT_INSATT (Attività/Ispezioni)
             $conn->query("DELETE FROM AT_INSATT WHERE IA_IDAR = $id_post");
 
-            // 4. Infine elimina l'Arnia
             $stmt = $conn->prepare("DELETE FROM AP_Arnie WHERE AR_ID = ?");
             $stmt->bind_param("i", $id_post);
             $stmt->execute();
@@ -85,10 +83,10 @@ if ($filtro_stato === "attive") {
 }
 
 if (!empty($ricerca)) {
-    $where_clauses[] = "(A.AR_CODICE LIKE ? OR L.AI_LUOGO LIKE ? OR A.AR_Note LIKE ?)";
+    $where_clauses[] = "(A.AR_CODICE LIKE ? OR A.AR_NOME LIKE ? OR L.AI_LUOGO LIKE ? OR A.AR_Note LIKE ?)";
     $term = "%$ricerca%";
-    $bind_types .= "sss";
-    $bind_values = array_merge($bind_values, [$term, $term, $term]);
+    $bind_types .= "ssss";
+    $bind_values = array_merge($bind_values, [$term, $term, $term, $term]);
 }
 
 $where_sql = implode(" AND ", $where_clauses);
@@ -116,7 +114,7 @@ $arnie = $stmt_list->get_result();
         
         <div class="filtri-container">
             <form method="GET" action="arnie.php">
-                <input type="text" name="ricerca" placeholder="Cerca codice..." value="<?php echo htmlspecialchars($ricerca); ?>">
+                <input type="text" name="ricerca" placeholder="Cerca..." value="<?php echo htmlspecialchars($ricerca); ?>">
                 <select name="filtro_stato">
                     <option value="attive" <?php echo ($filtro_stato == 'attive') ? 'selected' : ''; ?>>Arnie Attive</option>
                     <option value="tutte" <?php echo ($filtro_stato == 'tutte') ? 'selected' : ''; ?>>Tutte le Arnie</option>
@@ -138,13 +136,18 @@ $arnie = $stmt_list->get_result();
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr><th>Codice</th><th>Apiario</th><th>Stato</th><th>Azioni</th></tr>
+                            <tr><th>Codice</th><th>Nome Arnia</th><th>Apiario</th><th>Pos.</th><th>Stato</th><th>Azioni</th></tr>
                         </thead>
                         <tbody>
                             <?php while ($a = $arnie->fetch_assoc()): ?>
-                                <tr>
-                                    <td><strong><?php echo htmlspecialchars($a['AR_CODICE']); ?></strong></td>
+                                <tr <?php echo ($a['AR_attenzione'] == 1) ? 'style="background-color: #fff4f4;"' : ''; ?>>
+                                    <td>
+                                        <strong><?php echo htmlspecialchars($a['AR_CODICE']); ?></strong>
+                                        <?php echo ($a['AR_attenzione'] == 1) ? ' <span title="Arnia da attenzionare">🚨</span>' : ''; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($a['AR_NOME'] ?? ''); ?></td>
                                     <td><?php echo htmlspecialchars($a['AI_LUOGO'] ?? 'N/D'); ?></td>
+                                    <td><?php echo htmlspecialchars($a['AR_posizione'] ?? '0'); ?></td>
                                     <td><?php echo ($a['AR_ATTI'] == 1) ? '<span style="color:red;">Dismessa</span>' : 'Attiva'; ?></td>
                                     <td>
                                         <a href="gestatt.php?arnia_id=<?php echo $a['AR_ID']; ?>&tab=movimenti#tab-movimenti" class="btn btn-stampa" title="Vedi Attività">📝</a>
@@ -167,7 +170,7 @@ $arnie = $stmt_list->get_result();
 
             <div id="tab-form" class="tab-content <?php echo $modifica_id ? 'active' : ''; ?>">
                 <?php
-                $curr = ['AR_ID'=>'','AR_CODICE'=>'','AR_LUOGO'=>'','AR_DATA'=>'','AR_Note'=>'','AR_ATTI'=>0,'AR_NUCL'=>0,'AR_PROP'=>'','AR_CREG'=>'','AR_TREG'=>''];
+                $curr = ['AR_ID'=>'','AR_CODICE'=>'','AR_NOME'=>'','AR_LUOGO'=>'','AR_posizione'=>0,'AR_DATA'=>'','AR_Note'=>'','AR_ATTI'=>0,'AR_attenzione'=>0,'AR_NUCL'=>0,'AR_PROP'=>'','AR_CREG'=>'','AR_TREG'=>'','AR_TIPA'=>null];
                 if ($modifica_id) {
                     $st = $conn->prepare("SELECT * FROM AP_Arnie WHERE AR_ID = ?");
                     $st->bind_param("i", $modifica_id);
@@ -186,8 +189,27 @@ $arnie = $stmt_list->get_result();
                         </div>
 
                         <div class="form-group">
+                            <label>Nome Arnia</label>
+                            <input type="text" name="nome_arnia" value="<?php echo htmlspecialchars($curr['AR_NOME']); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tipologia Arnia</label>
+                            <select name="tipologia_arnia">
+                                <option value="">-- Seleziona --</option>
+                                <?php
+                                $tips = $conn->query("SELECT TI_id, TI_DESCR FROM TA_TIPA ORDER BY TI_DESCR ASC");
+                                while ($t = $tips->fetch_assoc()) {
+                                    $sel = ($t['TI_id'] == $curr['AR_TIPA']) ? "selected" : "";
+                                    echo "<option value='{$t['TI_id']}' $sel>{$t['TI_DESCR']}</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label>Apiario</label>
-                            <select name="luogo">
+                            <select name="luogo" style="width: 70%; display: inline-block;">
                                 <?php
                                 $aps = $conn->query("SELECT AI_ID, AI_LUOGO FROM TA_Apiari ORDER BY AI_LUOGO ASC");
                                 while ($api = $aps->fetch_assoc()) {
@@ -196,6 +218,7 @@ $arnie = $stmt_list->get_result();
                                 }
                                 ?>
                             </select>
+                            <input type="number" name="posizione" value="<?php echo (int)$curr['AR_posizione']; ?>" placeholder="Pos." style="width: 25%; display: inline-block; margin-left: 2%;">
                         </div>
 
                         <div class="form-group">
@@ -235,7 +258,16 @@ $arnie = $stmt_list->get_result();
                         </div>
 
                         <div class="form-group">
-                            <label><input type="checkbox" name="atti" <?php echo ($curr['AR_ATTI'] == 1) ? 'checked' : ''; ?>> Dismessa/Magazzino</label>
+                            <div style="display: flex; gap: 30px; align-items: center; margin: 10px 0;">
+                                <label style="margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" name="attenzione" <?php echo ($curr['AR_attenzione'] == 1) ? 'checked' : ''; ?>> 
+                                    <strong>⚠️ Attenzione (Pericolo/Sciamatura)</strong>
+                                </label>
+                                <label style="margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" name="atti" <?php echo ($curr['AR_ATTI'] == 1) ? 'checked' : ''; ?>> 
+                                    Dismessa/Magazzino
+                                </label>
+                            </div>
                         </div>
 
                         <div class="form-group">
