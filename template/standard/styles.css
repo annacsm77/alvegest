@@ -8,9 +8,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-               
-               
-               
+
 :root {
     --primary-bg: #e12326;    /* Rosso AlveGest */
     --secondary-bg: #472014;  /* Marrone scuro Menu */
@@ -47,7 +45,6 @@ body {
 }
 
 /* 3. Riquadro per la Home Page (index.php) */
-/* Analizzando le altre "pages", il contenuto è racchiuso in un box bianco bordato */
 .center-column {
     flex: 1 !important;
     background-color: #fff; /* Fondo bianco per il riquadro */
@@ -61,25 +58,19 @@ body {
     overflow: visible;
 }
 
-
 h2 {
     display: block; 
-    font-size: 1 em;
-    padding 5;
+    font-size: 1.2rem;
+    padding: 5px;
     margin-block-start: 0.83em; 
     margin-block-end: 0.83em; 
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
     font-weight: bold;
-    unicode-bidi: isolate;
     color: #e12326 !important;
 }
 
 main h2 {
-    scroll-margin-top: 100px; /* Se c'è un'ancora, si ferma prima del menu */
+    scroll-margin-top: 100px;
 }
-
-
 
 /* --- HEADER E MENU --- */
 header { background-color: var(--primary-bg); color: var(--main-text); text-align: center; padding: 0;}
@@ -113,7 +104,7 @@ nav ul li a, .dropdown .dropbtn {
 }
 .dropdown:hover .dropdown-content { display: block; }
 
-/* --- SISTEMA TAB (FIX DEFINITIVO) --- */
+/* --- SISTEMA TAB --- */
 .tabs-container { width: 100%; margin-top: 20px; }
 .tabs-menu { display: flex; list-style: none; border-bottom: 2px solid var(--primary-bg); }
 
@@ -133,7 +124,6 @@ nav ul li a, .dropdown .dropbtn {
     border-color: var(--primary-bg);
 }
 
-/* Nota: rimosso !important da qui per permettere al JS di funzionare */
 .tab-content { 
     display: none; 
     padding: 20px; 
@@ -144,15 +134,6 @@ nav ul li a, .dropdown .dropbtn {
 .tab-content.active { 
     display: block; 
 }
-
-.tab-content, .tab-pane {
-    display: none;
-}
-.tab-content.active, .tab-pane.active {
-    display: block;
-    animation: none !important; /* Rimuove eventuali animazioni che causano lo spostamento */
-}
-
 
 /* --- TABELLE --- */
 .table-container { width: 100%; margin-top: 10px; }
@@ -166,20 +147,29 @@ th {
 }
 td { border: 1px solid #ccc; padding: 8px; background-color: #fff; }
 
-
-.filtri-container{    
-        margin:10px 0px 10px 0px ; 
-        padding: 5px;
+/* STILE LINK CODICE ARNIA (Disposizione Apiari) */
+.link-gestatt {
+    color: #800000 !important; /* Rosso Bruno (Maroon) */
+    text-decoration: none !important;
+    font-weight: bold;
+}
+.link-gestatt:hover {
+    text-decoration: underline !important;
+    color: #a52a2a !important;
 }
 
+.filtri-container {    
+    margin: 10px 0; 
+    padding: 5px;
+}
 
-/* --- PULSANTI E FEEDBACK (FIX VISIBILITÀ) --- */
+/* --- PULSANTI E FEEDBACK --- */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;                                                    
     height: 32px;
-    padding: 0 5px;
+    padding: 0 10px;
     border-radius: 4px;
     font-size: 10px;
     font-weight: bold;
@@ -187,27 +177,18 @@ td { border: 1px solid #ccc; padding: 8px; background-color: #fff; }
     cursor: pointer;
     text-decoration: none;
     border: none;
-    color: white; /* Testo base bianco */
+    color: white;
 }
 
-
-/* Colori forzati per i vari tipi di pulsante */
 .btn-salva, .btn-inserisci, .btn-cerca, .btn-modifica, .btn-elimina, .btn-annulla, .btn-reset {
     color: white !important;
 }
 
 .btn-salva, .btn-inserisci, .btn-cerca { background-color: #28a745 !important; }
-.btn-modifica { background-color: #ffc107 !important; color: #333 !important; } /* Giallo con testo nero */
+.btn-modifica { background-color: #ffc107 !important; color: #333 !important; }
 .btn-elimina { background-color: #dc3545 !important; }
 .btn-annulla, .btn-reset { background-color: #6c757d !important; }
 .btn-attivita, .btn-stampa { background-color: #9dbd31 !important; }
-
-/* Icone FontAwesome */
-.btn::before { font-family: "Font Awesome 6 Free"; font-weight: 900; margin-right: 8px; }
-.btn-salva::before, .btn-inserisci::before, .btn-cerca::before { content: "\f0c7"; }
-.btn-modifica::before { content: "\f303"; }
-.btn-elimina::before { content: "\f2ed"; }
-.btn-reset::before { content: "\f2f1"; }
 
 /* --- FORM E INPUT --- */
 .form-container {
@@ -217,24 +198,19 @@ td { border: 1px solid #ccc; padding: 8px; background-color: #fff; }
     margin-bottom: 20px;
 }
 
-
-
 .form-group label { display: block; font-weight: bold; margin-bottom: 5px; margin-top: 5px; color: #333; }
-.form-group input, .form-group select, .form-group textarea, .form-group checkbox   {
+.form-group input, .form-group select, .form-group textarea {
     padding: 10px;
     border: 1px solid #ccc;
     width: 100%;
-    /*background-color: #ffffff;
 }
 
 /* RIGHE PERICOLO */
 tr.riga-pericolo td { background-color: #ffe6e6 !important; color: #b94a48 !important; }
 
-
 /* ==========================================================================
-   SEZIONE WIDGET - BORDO VISIBILE E RIDIMENSIONAMENTO
+   SEZIONE WIDGET
    ========================================================================== */
-
 .widget-grid {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -242,19 +218,14 @@ tr.riga-pericolo td { background-color: #ffe6e6 !important; color: #b94a48 !impo
     padding: 20px !important;
 }
 
-/* Qui uniamo le classi: il punto davanti è fondamentale */
 .widget-card.draggable {
     background-color: #ffffff !important;
-    /* BORDO MOLTO VISIBILE */
     border: 4px solid #333333 !important; 
     border-radius: 15px !important;
     padding: 20px !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-    
-    /* ABILITA RIDIMENSIONAMENTO */
     resize: both !important;
     overflow: auto !important;
-    
     min-width: 280px !important;
     min-height: 220px !important;
     display: flex !important;
@@ -276,7 +247,6 @@ tr.riga-pericolo td { background-color: #ffe6e6 !important; color: #b94a48 !impo
     color: #666 !important;
 }
 
-/* Colore della maniglia di ridimensionamento in basso a destra */
 .widget-card::-webkit-resizer {
     background-color: #333;
     border: 3px solid #fff;

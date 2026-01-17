@@ -1,38 +1,40 @@
 /* template/standard/widget_style.css */
 
+/* Contenitore principale: deve essere relative per permettere il posizionamento absolute dei widget */
 .widget-grid {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 20px !important;
-    padding: 20px !important;
+    position: relative !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    display: block !important; /* Rimosso flex per evitare l'incolonnamento forzato */
     background: transparent !important;
+    padding: 20px !important;
 }
 
+/* Card del Widget */
 .widget-card.draggable {
     background-color: #ffffff !important;
-    border: 4px solid #333333 !important; /* Bordo molto visibile */
+    border: 4px solid #333333 !important;
     border-radius: 15px !important;
-    padding: 20px !important;
+    padding: 10px !important; /* Compatto per widget piccoli */
     box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-    
-    /* Ridimensionamento */
-    resize: both !important;
-    overflow: auto !important;
-    
-    min-width: 280px !important;
-    min-height: 220px !important;
+    position: absolute !important; /* Essenziale per lo spostamento libero tramite coordinate */
+    z-index: 10 !important;
     display: flex !important;
     flex-direction: column !important;
-    position: relative !important;
+    resize: both !important;
+    overflow: auto !important;
+    min-width: 250px !important;
+    min-height: 150px !important;
 }
 
+/* Header del Widget */
 .widget-header {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
     border-bottom: 2px solid #eeeeee !important;
-    margin-bottom: 15px !important;
-    padding-bottom: 10px !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 5px !important;
 }
 
 .drag-handle {
@@ -41,10 +43,11 @@
     color: #666 !important;
 }
 
-/* Maniglia di ridimensionamento */
-.widget-card::-webkit-resizer {
-    background-color: #333;
-    border: 3px solid #fff;
+/* Stato durante il trascinamento */
+.ui-draggable-dragging {
+    z-index: 1000 !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+    opacity: 0.9;
 }
 
 .sortable-ghost {
@@ -52,9 +55,51 @@
     background-color: #eee !important;
 }
 
-/* Assicurati che la griglia non abbia proprietà che bloccano il posizionamento */
-.widget-grid {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-content: flex-start !important;
+/* Maniglia di ridimensionamento in basso a destra */
+.widget-card::-webkit-resizer {
+    background-color: #333;
+    border: 3px solid #fff;
+}
+
+/* --- BADGE ARNIA (QUADRATINI) --- */
+
+/* Badge Standard (Verdino) */
+.widget-badge-arnia {
+    background-color: #e8f5e9 !important;
+    border: 1px solid #c8e6c9 !important;
+    color: #2e7d32 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 0.9em !important;
+    font-weight: bold !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    line-height: 1.2 !important;
+    min-width: 35px !important;
+    text-align: center !important;
+}
+
+.widget-badge-arnia:hover {
+    background-color: #c8e6c9 !important;
+    border-color: #81c784 !important;
+}
+
+/* Badge ATTENZIONE (Rosso AlveGest) */
+.widget-badge-attenzione {
+    background-color: #e12326 !important;
+    border: 1px solid #b31b1d !important;
+    color: #ffffff !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 0.9em !important;
+    font-weight: bold !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    line-height: 1.2 !important;
+    min-width: 35px !important;
+    text-align: center !important;
+}
+
+.widget-badge-attenzione:hover {
+    background-color: #b31b1d !important;
 }
