@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Creato il: Dic 28, 2025 alle 12:36
+-- Creato il: Gen 07, 2026 alle 17:05
 -- Versione del server: 10.11.6-MariaDB
 -- Versione PHP: 8.2.21
 
@@ -47,10 +47,12 @@ CREATE TABLE `AP_Arnie` (
   `AR_CODICE` int(11) NOT NULL,
   `AR_NOME` varchar(60) NOT NULL,
   `AR_LUOGO` int(11) DEFAULT NULL,
+  `AR_posizione` int(11) NOT NULL DEFAULT 0,
   `AR_PROP` varchar(60) NOT NULL,
   `AR_CREG` char(3) NOT NULL,
   `AR_TREG` varchar(15) NOT NULL,
   `AR_ATTI` tinyint(1) NOT NULL DEFAULT 0,
+  `AR_attenzione` tinyint(1) NOT NULL DEFAULT 0,
   `AR_DATA` date DEFAULT current_timestamp(),
   `AR_NUCL` tinyint(1) NOT NULL DEFAULT 0,
   `AR_Note` text DEFAULT NULL
