@@ -35,34 +35,35 @@ if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $data_f = date('d/m/y', strtotime($row['IA_DATA']));
         $regina = ($row['IA_VREG'] == 1) ? '👑 ' : '';
+        $pericolo = ($row['IA_PERI'] == 1) ? '⚠️ ' : '';
         
-        // Prepariamo i dati per la funzione JS di modifica
-        $note_js = addslashes($row['IA_NOTE'] ?? '');
-        $json_data = json_encode([
-            'id' => $row['IA_ID'],
-            'data' => $row['IA_DATA'],
-            'tipo' => $row['IA_ATT'],
-            'note' => $row['IA_NOTE'],
-            'peri' => $row['IA_PERI'],
-            'vreg' => $row['IA_VREG'],
-            'op1' => $row['IA_OP1'],
-            'op2' => $row['IA_OP2']
-        ]);
+        // Prepariamo i parametri per la funzione editAttivita definita in mobile.php
+        // Parametri: id, data, note, peri, vreg, op1, op2, att_id
+        $params = sprintf(
+            "%d, '%s', '%s', %d, %d, %d, %d, %d",
+            $row['IA_ID'],
+            $row['IA_DATA'],
+            addslashes($row['IA_NOTE'] ?? ''),
+            $row['IA_PERI'],
+            $row['IA_VREG'],
+            $row['IA_OP1'],
+            $row['IA_OP2'],
+            $row['IA_ATT']
+        );
 
         echo "<tr>
                 <td>$data_f</td>
-                <td><strong>$regina" . htmlspecialchars($row['AT_DESCR']) . "</strong><br><small>" . htmlspecialchars($row['IA_NOTE'] ?? '') . "</small></td>
+                <td>
+                    <strong>$pericolo$regina" . htmlspecialchars($row['AT_DESCR']) . "</strong><br>
+                    <small>" . htmlspecialchars($row['IA_NOTE'] ?? '') . "</small>
+                </td>
                 <td style='text-align: center;'>
-                    <button type='button' class='btn-edit-mobile' onclick='startEditMobile(". $json_data .")'>MOD</button>
-         <a href='mobile.php?elimina_id=" . $row['IA_ID'] . "&arnia_id=" . $arnia_id . "' 
-         class='btn-delete-mobile' 
-         onclick='return confirm(\"Eliminare questa attività? Verranno rimossi anche foto e magazzino.\")'>DEL</a>;
+                    <button type='button' class='btn-edit-mobile' onclick=\"editAttivita($params)\">MOD</button>
+                    <a href='mobile.php?elimina_id=" . $row['IA_ID'] . "&arnia_id=" . $arnia_id . "' 
+                       class='btn-delete-mobile' 
+                       onclick='return confirm(\"Eliminare questa attività? Verranno rimossi anche foto e magazzino.\")'>DEL</a>
                 </td>
               </tr>";
-    
- 
-    
-    
     }
     echo "</tbody></table>";
 } else {

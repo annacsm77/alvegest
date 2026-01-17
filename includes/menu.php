@@ -8,6 +8,8 @@
                 <a href="<?php echo url('pages/attivita.php'); ?>">Tipologie Attività</a>
                 <a href="<?php echo url('pages/apicoltore.php'); ?>">Apicoltore</a>
                 <a href="<?php echo url('pages/apiari.php'); ?>">Apiari</a>
+                <a href="<?php echo url('pages/fioriture.php'); ?>">Fioriture</a> 
+                <a href="<?php echo url('pages/tipologie_arnie.php'); ?>">Tipologie Arnie</a>
                 <a href="<?php echo url('pages/conf_gob.php'); ?>">Configurazione</a>
             </div>
         </li>
@@ -48,7 +50,7 @@
         <li class="dropdown">
             <a href="javascript:void(0)" class="dropbtn">Trattamenti</a>
             <div class="dropdown-content">
-                <a href="<?php echo url('pages/gesttratt.php'); ?>">Storico Trattamenti</a> 
+                <a href="<?php echo url('pages/gesttratt.php'); ?>">Storico Trattamenti</a>
                 <a href="<?php echo url('pages/fasetratt.php'); ?>">Fase Trattamenti</a>
                 <a href="<?php echo url('pages/scadenziario.php'); ?>">Scadenziario</a>
             </div>
