@@ -10,7 +10,11 @@
                 <a href="<?php echo url('pages/apiari.php'); ?>">Apiari</a>
                 <a href="<?php echo url('pages/fioriture.php'); ?>">Fioriture</a> 
                 <a href="<?php echo url('pages/tipologie_arnie.php'); ?>">Tipologie Arnie</a>
+                <a href="<?php echo url('pages/accounts.php'); ?>">Gestione Utenti</a>
                 <a href="<?php echo url('pages/conf_gob.php'); ?>">Configurazione</a>
+                    <?//php if (isset($_SESSION['AC_ruolo']) && $_SESSION['AC_ruolo'] === 'admin'): ?>
+                <a href="<?php echo url('pages/logs.php'); ?>">Registro Attività</a>
+                    <?//php endif; ?>
             </div>
         </li>
         
