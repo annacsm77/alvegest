@@ -19,6 +19,7 @@
 
 body {
     font-family: Arial, sans-serif;
+    font-size: 14px;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -52,7 +53,7 @@ body {
     padding: 10px;
     border: 1px solid #ddd; /* Bordo sottile */
     border-radius: 8px;     /* Angoli arrotondati come le altre pagine */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Ombra leggera per profondit� */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Ombra leggera per profondità */
     min-height: calc(100vh - 40px); /* Altezza schermo meno i margini */
     display: block;
     overflow: visible;
@@ -61,9 +62,9 @@ body {
 h2 {
     display: block; 
     font-size: 1.2rem;
-    padding: 5px;
-    margin-block-start: 0.83em; 
-    margin-block-end: 0.83em; 
+    padding: 3px;
+    margin-block-start: 0; 
+    margin-block-end: 3px; 
     font-weight: bold;
     color: #e12326 !important;
 }
@@ -159,8 +160,8 @@ td { border: 1px solid #ccc; padding: 8px; background-color: #fff; }
 }
 
 .filtri-container {    
-    margin: 10px 0; 
-    padding: 5px;
+    margin: 5px 0; 
+    padding: 0px;
 }
 
 /* --- PULSANTI E FEEDBACK --- */
@@ -183,9 +184,23 @@ td { border: 1px solid #ccc; padding: 8px; background-color: #fff; }
 .btn-salva, .btn-inserisci, .btn-cerca, .btn-modifica, .btn-elimina, .btn-annulla, .btn-reset {
     color: white !important;
 }
+/* Stile per il badge di attenzione nella disposizione apiari */
+.badge-pericolo {
+    background-color: #dc3545;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-left: 10px;
+    display: inline-block;
+}
 
 .btn-salva, .btn-inserisci, .btn-cerca { background-color: #28a745 !important; }
 .btn-modifica { background-color: #ffc107 !important; color: #333 !important; }
+
+
+
 .btn-elimina { background-color: #dc3545 !important; }
 .btn-annulla, .btn-reset { background-color: #6c757d !important; }
 .btn-attivita, .btn-stampa { background-color: #9dbd31 !important; }
@@ -250,4 +265,118 @@ tr.riga-pericolo td { background-color: #ffe6e6 !important; color: #b94a48 !impo
 .widget-card::-webkit-resizer {
     background-color: #333;
     border: 3px solid #fff;
+}
+
+
+
+/* --- STILE SPECIFICO PULSANTE MODIFICA IN TABELLA --- */
+.btn-tabella-modifica {
+    background-color: #fbc02d !important; /* Giallo intenso Post-it */
+    color: #8b4513 !important;           /* Marrone scuro per il testo */
+    border: 1px solid #d4af37 !important;
+    font-weight: bold !important;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-tabella-modifica:hover {
+    background-color: #f9a825 !important;
+    color: #5d4037 !important;
+}
+
+/* Classi di utilità per la gestione dei pulsanti nel form (senza stili inline) */
+.btn-group-flex {
+    display: flex !important;
+    gap: 10px !important;
+    margin-top: 20px !important;
+}
+
+.btn-flex-2 { flex: 2 !important; }
+.btn-flex-1 { flex: 1 !important; }
+
+/* Gestione Finestra Modale */
+.modal-custom {
+    display: none; /* Nasconde il modale di default */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* Sfondo semitrasparente */
+}
+
+.modal-content-small {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 8px;
+    border: 2px solid var(--primary-bg); /* Usa il rosso AlveGest */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.full-width {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+/* --- AGGIUNTA PER ALLINEAMENTO LOGS --- */
+.btn-group-flex-filter {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100%;
+}
+
+.flex-spacer { 
+    flex-grow: 1 !important; 
+}
+
+
+
+.txt-center { text-align: center !important; }
+.txt-right  { text-align: right !important; }
+.txt-small  { font-size: 20px !important; }
+.txt-muted  { color: #666 !important; }
+.font-bold  { font-weight: bold !important; }
+.txt-danger { color: #dc3545 !important; }
+
+/* Allineamento Mappa e Layout Apiari */
+.apiari-layout { display: flex; gap: 20px; align-items: flex-start; }
+.apiari-col-main { flex: 2; }
+.apiari-col-map { flex: 1; min-width: 300px; }
+
+.map-box { 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    border-radius: 8px; 
+    background: #fff;
+}
+.map-wrapper { height: 400px; width: 100%; position: relative; }
+.map-iframe { border: 0; width: 100%; height: 100%; border-radius: 4px; }
+.titolo-mappa { font-size: 14px; margin-bottom: 10px; color: #472014; font-weight: bold; }
+
+.hidden { display: none !important; }
+
+/* Impedisce ai dati POST di allargare la tabella oltre il dovuto */
+.selectable-table td:last-child {
+    max-width: 300px;           /* Limita la larghezza della colonna dati */
+    word-wrap: break-word;      /* Forza il testo ad andare a capo */
+    overflow-wrap: break-word;  /* Supporto moderno per l'andata a capo */
+    white-space: normal;        /* Permette al testo di occupare più righe */
+    font-size: 11px;            /* Rende il JSON leggermente più piccolo */
+    color: #666;                /* Colore più discreto per i dati tecnici */
 }

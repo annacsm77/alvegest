@@ -1,30 +1,33 @@
 /* template/standard/widget_style.css */
 
-/* Contenitore principale: deve essere relative per permettere il posizionamento absolute dei widget */
+/* Contenitore principale */
 .widget-grid {
     position: relative !important;
     width: 100% !important;
     min-height: 100vh !important;
-    display: block !important; /* Rimosso flex per evitare l'incolonnamento forzato */
+    display: block !important; 
     background: transparent !important;
-    padding: 20px !important;
+    padding: 2px !important;
 }
 
-/* Card del Widget */
+/* Card del Widget - STILE LOGIN ALVEGEST */
 .widget-card.draggable {
     background-color: #ffffff !important;
-    border: 4px solid #333333 !important;
-    border-radius: 15px !important;
-    padding: 10px !important; /* Compatto per widget piccoli */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-    position: absolute !important; /* Essenziale per lo spostamento libero tramite coordinate */
+    /* Bordo sottile e grigio come la login-card */
+    border: 1px solid #ddd !important; 
+    border-radius: 8px !important; 
+    padding: 5px !important; 
+    /* Ombra morbida identica alla login-card */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; 
+    position: absolute !important; 
     z-index: 10 !important;
     display: flex !important;
     flex-direction: column !important;
     resize: both !important;
     overflow: auto !important;
-    min-width: 250px !important;
+    min-width: 20px !important;
     min-height: 150px !important;
+    transition: box-shadow 0.3s ease;
 }
 
 /* Header del Widget */
@@ -32,74 +35,208 @@
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    border-bottom: 2px solid #eeeeee !important;
-    margin-bottom: 8px !important;
-    padding-bottom: 5px !important;
+    /* Linea di separazione sottile */
+    border-bottom: 1px solid #eeeeee !important; 
+    margin-bottom: 15px !important;
+    padding-bottom: 8px !important;
+}
+
+/* Titolo del Widget (H3 o simile) */
+.widget-header h3 {
+    color: #111 !important;
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
 }
 
 .drag-handle {
     cursor: move !important;
-    font-size: 1.5rem !important;
-    color: #666 !important;
+    font-size: 1.2rem !important;
+    color: #a6a6a6 !important; /* Colore neutro come i bordi input */
 }
 
 /* Stato durante il trascinamento */
 .ui-draggable-dragging {
     z-index: 1000 !important;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
-    opacity: 0.9;
+    /* Ombra più marcata durante il movimento */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+    opacity: 0.95;
 }
 
-.sortable-ghost {
-    opacity: 0.4;
-    background-color: #eee !important;
-}
-
-/* Maniglia di ridimensionamento in basso a destra */
+/* Maniglia di ridimensionamento personalizzata */
 .widget-card::-webkit-resizer {
-    background-color: #333;
-    border: 3px solid #fff;
+    background-image: linear-gradient(135deg, transparent 50%, #e77600 50%); /* Angolino arancione AlveGest */
+    width: 12px;
+    height: 12px;
 }
 
 /* --- BADGE ARNIA (QUADRATINI) --- */
 
-/* Badge Standard (Verdino) */
+/* Badge Standard - Pulito */
 .widget-badge-arnia {
-    background-color: #e8f5e9 !important;
-    border: 1px solid #c8e6c9 !important;
-    color: #2e7d32 !important;
-    padding: 2px 6px !important;
-    border-radius: 4px !important;
-    font-size: 0.9em !important;
+    background-color: #f7fafa !important;
+    border: 1px solid #d5dbdb !important;
+    color: #111 !important;
+    padding: 3px 8px !important;
+    border-radius: 3px !important;
+    font-size: 0.85em !important;
     font-weight: bold !important;
     text-decoration: none !important;
     display: inline-block !important;
-    line-height: 1.2 !important;
-    min-width: 35px !important;
     text-align: center !important;
 }
 
 .widget-badge-arnia:hover {
-    background-color: #c8e6c9 !important;
-    border-color: #81c784 !important;
+    background-color: #eff2f2 !important;
+    border-color: #adb5bd !important;
 }
 
-/* Badge ATTENZIONE (Rosso AlveGest) */
+/* Badge ATTENZIONE (Stile Bottone Amazon) */
 .widget-badge-attenzione {
-    background-color: #e12326 !important;
+    background: #e12326 !important;
     border: 1px solid #b31b1d !important;
     color: #ffffff !important;
-    padding: 2px 6px !important;
-    border-radius: 4px !important;
-    font-size: 0.9em !important;
+    padding: 3px 8px !important;
+    border-radius: 3px !important;
+    font-size: 0.85em !important;
     font-weight: bold !important;
     text-decoration: none !important;
     display: inline-block !important;
-    line-height: 1.2 !important;
-    min-width: 35px !important;
     text-align: center !important;
 }
 
-.widget-badge-attenzione:hover {
-    background-color: #b31b1d !important;
+/* Contenitore principale dei widget */
+.widget-grid {
+    position: relative !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    display: block !important; 
+    /* Applichiamo lo stesso grigio dello sfondo login */
+    background-color: #f3f3f3 !important; 
+    padding: 20px !important;
+    box-sizing: border-box !important;
+}
+/* Stile specifico per Widget Note (Post-it) */
+/* Stile Post-it Rinforzato */
+.widget-grid .widget-card.widget-postit {
+    background-color: #fff9c4 !important; /* Giallo Post-it */
+    border: 1px solid #f0e68c !important;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.2) !important;
+}
+
+.widget-grid .widget-card.widget-postit .widget-header {
+    background-color: rgba(139, 69, 19, 0.1) !important;
+    border-bottom: 1px dashed #d4af37 !important;
+}
+
+.widget-grid .widget-card.widget-postit .widget-header h3 {
+    color: #8b4513 !important;
+    font-family: 'Comic Sans MS', cursive, sans-serif !important;
+    font-weight: bold !important;
+}
+
+/* Corpo della nota */
+.widget-grid .widget-card.widget-postit .note-text {
+    font-family: 'Verdana', sans-serif !important;
+    color: #3e2723 !important;
+    font-style: italic !important;
+}
+/* Container dei tab delle note nel widget */
+.note-tabs-header {
+    display: flex;
+    overflow-x: auto; /* Scorrimento orizzontale per i tab se sono troppi */
+    background: rgba(0, 0, 0, 0.05);
+    padding: 5px 5px 0 5px;
+    gap: 2px;
+    border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+}
+
+.note-tab-btn {
+    padding: 4px 10px;
+    font-size: 0.75em;
+    cursor: pointer;
+    background: #f0e68c;
+    border: 1px solid rgba(139, 69, 19, 0.2);
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    white-space: nowrap;
+    color: #8b4513;
+}
+
+.note-tab-btn.active {
+    background: #fff9c4 !important;
+    font-weight: bold;
+    border-bottom: 1px solid #fff9c4;
+    margin-bottom: -1px;
+    z-index: 2;
+}
+
+/* Container dei tab: scorrimento orizzontale fluido, nascondiamo la barra per estetica */
+.note-tabs-header {
+    display: flex !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    background: rgba(0, 0, 0, 0.03);
+    padding: 5px 5px 0 5px;
+    gap: 3px;
+    border-bottom: 1px solid rgba(139, 69, 19, 0.15);
+    flex-shrink: 0;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.note-tabs-header::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+/* Corpo della nota: scorrimento verticale forzato */
+.note-body-scroll {
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    flex-grow: 1;
+    padding: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: #8b4513 transparent;
+}
+
+/* Container dei tab: forziamo la barra di scorrimento orizzontale e impediamo l'andata a capo */
+.note-tabs-header {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* Forza i tab su una sola riga */
+    overflow-x: auto !important; /* Abilita lo scorrimento orizzontale */
+    overflow-y: hidden !important;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 5px 5px 0 5px;
+    gap: 3px;
+    border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Assicuriamoci che i pulsanti tab non si restringano per stare nello spazio */
+.note-tab-btn {
+    flex: 0 0 auto !important; /* Impedisce ai tab di rimpicciolirsi */
+    padding: 4px 10px;
+    font-size: 0.75em;
+    cursor: pointer;
+    background: #f0e68c;
+    border: 1px solid rgba(139, 69, 19, 0.2);
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    white-space: nowrap; /* Impedisce al testo del tab di andare a capo */
+    color: #8b4513;
+}
+
+/* Rendiamo la barra di scorrimento orizzontale sempre visibile e ben definita */
+.note-tabs-header::-webkit-scrollbar {
+    height: 8px !important; /* Altezza della barra orizzontale */
+    display: block !important;
+}
+
+.note-tabs-header::-webkit-scrollbar-thumb {
+    background: #8b4513 !important; /* Colore marrone Alvegest */
+    border-radius: 10px;
+}
+
+.note-tabs-header::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1) !important;
 }

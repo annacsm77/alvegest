@@ -1,0 +1,126 @@
+/* ==========================================================================
+   HEADER STYLE AMAZON - ALVEGEST (SOLO FIX TENDINA)
+   ========================================================================== */
+
+.amz-header {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.amz-header-top {
+    background-color: #131921 !important;
+    height: 50px; 
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.amz-logo-white { color: white; font-size: 20px; font-weight: bold; }
+.amz-logo-orange { color: #febd69; font-size: 15px; font-weight: bold; }
+
+/* FASCIA SOTTO */
+.amz-nav-container, 
+.amz-nav-container nav,
+header nav { 
+    background-color: #232f3e !important;
+    background-image: none !important;
+    height: 39px;
+    display: flex;
+    align-items: center;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative;
+}
+
+.amz-nav-container ul {
+    list-style: none !important;
+    display: flex !important;
+    align-items: center;
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 10px !important;
+}
+
+.amz-nav-container ul li {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.amz-nav-container ul li a, 
+.amz-nav-container .dropbtn {
+    color: #ffffff !important; 
+    text-decoration: none !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border: 1px solid transparent !important;
+    height: 30px;
+    line-height: 30px;
+    display: inline-block;
+}
+
+.amz-nav-container ul li a:hover, 
+.amz-nav-container .dropdown:hover .dropbtn {
+    border: 1px solid #ffffff !important;
+    border-radius: 2px;
+}
+
+/* --- MODIFICATO SOLO QUESTO BLOCCO PER MOSTRARE TUTTI GLI ELEMENTI --- */
+
+.amz-nav-container .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffff !important;
+    top: 39px; 
+    left: 0;
+    min-width: 230px; /* Un po' più larga per evitare che il testo vada a capo */
+    width: max-content;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.3) !important;
+    z-index: 99999;
+    border-radius: 0 0 4px 4px;
+    border: 1px solid #ddd;
+    
+    /* FIX: Altezza automatica e nessuna restrizione */
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 5px 0 !important;
+}
+
+.amz-nav-container .dropdown:hover .dropdown-content {
+    display: block !important;
+}
+
+/* Ponte invisibile */
+.amz-nav-container .dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: transparent;
+}
+
+.amz-nav-container .dropdown-content a {
+    color: #111111 !important; 
+    padding: 0 16px !important;    /* Rimosso padding verticale per centrare con line-height */
+    font-size: 13px !important;
+    display: block !important;
+    text-align: left !important;
+    background: white !important;
+    height: 35px;                  /* Altezza fissa per ogni riga */
+    line-height: 35px;             /* Allinea il testo esattamente al centro verticale */
+    text-decoration: none !important;
+}
+
+.amz-nav-container .dropdown-content a:hover {
+    background-color: #f3f3f3 !important;
+    color: #007185 !important;
+    text-decoration: underline !important;
+}

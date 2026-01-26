@@ -3,3 +3,7 @@
     </footer>
 </body>
 </html>
+<?php
+// ... tuo codice footer
+ob_end_flush(); // Invia tutto l'output accumulato al browser
+?>
