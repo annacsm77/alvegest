@@ -1,13 +1,10 @@
 ﻿<?php
 // DEFINIZIONE VERSIONE FILE
-define('FILE_VERSION', 'V.0.0.1 (Template Tabs)');
+define('FILE_VERSION', 'V.0.0.4 - Zero Inline Styles & Dynamic Titles');
 
 require_once '../includes/config.php';
-require_once TPL_PATH . 'header.php';
 
-$messaggio = "";
-
-// --- 1. LOGICA CRUD ---
+// --- 1. LOGICA CRUD IN ALTO ---
 
 // ELIMINAZIONE
 if (isset($_GET['elimina'])) {
@@ -15,7 +12,7 @@ if (isset($_GET['elimina'])) {
     $stmt = $conn->prepare("DELETE FROM TA_Attivita WHERE AT_ID = ?");
     $stmt->bind_param("i", $id_del);
     if ($stmt->execute()) {
-        header("Location: attivita.php?status=del_success");
+        header("Location: attivita.php?status=del_success&tab=tab-lista");
         exit();
     }
 }
@@ -43,19 +40,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_attivita'])) {
 
     if ($stmt->execute()) {
         $status = $id ? "update_success" : "insert_success";
-        header("Location: attivita.php?status=$status");
+        header("Location: attivita.php?status=$status&tab=tab-lista");
         exit();
-    } else {
-        $messaggio = "<p class='errore'>Errore DB: " . $conn->error . "</p>";
     }
 }
 
-// 2. FEEDBACK E RECUPERO DATI
+require_once TPL_PATH . 'header.php';
+
+$messaggio = "";
 if (isset($_GET['status'])) {
     $st = $_GET['status'];
-    if ($st == 'insert_success') $messaggio = "<p class='successo'>Attività inserita con successo!</p>";
-    if ($st == 'update_success') $messaggio = "<p class='successo'>Attività aggiornata!</p>";
-    if ($st == 'del_success') $messaggio = "<p class='successo'>Attività eliminata!</p>";
+    if ($st == 'insert_success') $messaggio = "<p class='successo'>Attività inserita correttamente!</p>";
+    if ($st == 'update_success') $messaggio = "<p class='successo'>Dati aggiornati!</p>";
+    if ($st == 'del_success') $messaggio = "<p class='successo txt-danger font-bold'>Attività rimossa definitivamente.</p>";
 }
 
 $edit_id = $_GET['edit'] ?? null;
@@ -74,21 +71,21 @@ if ($edit_id) {
 
         <div class="tabs-container">
             <ul class="tabs-menu">
-                <li class="tab-link <?php echo !$edit_id ? 'active' : ''; ?>" id="link-tab-lista" onclick="openTab(event, 'tab-lista')">Elenco Attività</li>
+                <li class="tab-link <?php echo !$edit_id ? 'active' : ''; ?>" id="link-tab-lista" onclick="openTab(event, 'tab-lista')">ELENCO</li>
                 <li class="tab-link <?php echo $edit_id ? 'active' : ''; ?>" id="link-tab-form" onclick="openTab(event, 'tab-form')">
-                    <?php echo $edit_id ? "Dettaglio e Modifica" : "Nuova Attività"; ?>
+                    <?php echo $edit_id ? "MODIFICA" : "NUOVA"; ?>
                 </li>
             </ul>
 
             <div id="tab-lista" class="tab-content <?php echo !$edit_id ? 'active' : ''; ?>">
                 <div class="table-container">
-                    <table>
+                    <table class="selectable-table">
                         <thead>
                             <tr>
-                                <th>Descrizione Attività</th>
-                                <th class="cell-center">Tratt.</th>
-                                <th>Categoria Magazzino</th>
-                                <th>Azioni</th>
+                                <th>DESCRIZIONE</th>
+                                <th class="txt-center">TRATT.</th>
+                                <th>MAGAZZINO</th>
+                                <th class="txt-center">AZIONI</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -96,12 +93,12 @@ if ($edit_id) {
                             $lista = $conn->query("SELECT T.*, M.TM_Descrizione FROM TA_Attivita T LEFT JOIN TA_MAG M ON T.AT_MAG_ID = M.ID ORDER BY AT_DESCR ASC");
                             while ($r = $lista->fetch_assoc()):
                             ?>
-                            <tr onclick="window.location.href='attivita.php?edit=<?php echo $r['AT_ID']; ?>#tab-form'">
-                                <td><?php echo htmlspecialchars($r['AT_DESCR']); ?></td>
-                                <td class="cell-center"><?php echo ($r['AT_TRAT'] == 1) ? '✅' : ''; ?></td>
-                                <td><small><?php echo htmlspecialchars($r['TM_Descrizione'] ?? 'Nessun collegamento'); ?></small></td>
-                                <td>
-                                    <a href="attivita.php?edit=<?php echo $r['AT_ID']; ?>#tab-form" class="btn btn-modifica">Modifica</a>
+                            <tr>
+                                <td class="font-bold"><?php echo htmlspecialchars($r['AT_DESCR']); ?></td>
+                                <td class="txt-center"><?php echo ($r['AT_TRAT'] == 1) ? '✅' : ''; ?></td>
+                                <td class="txt-small txt-muted"><?php echo htmlspecialchars($r['TM_Descrizione'] ?? 'Nessuno'); ?></td>
+                                <td class="txt-center">
+                                    <a href="attivita.php?edit=<?php echo $r['AT_ID']; ?>&tab=tab-form" class="btn-tabella-modifica">Modifica</a>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
@@ -120,8 +117,8 @@ if ($edit_id) {
                             <input type="text" name="descrizione" value="<?php echo htmlspecialchars($row_edit['AT_DESCR']); ?>" required>
                         </div>
 
-                        <div class="filtri-container" style="background-color: #f0fff0; border: 1px solid #90ee90;">
-                            <label style="color: #2e7d32;">Sottomastro (Magazzino):</label>
+                        <div class="form-group">
+                            <label>Sottomastro (Magazzino):</label>
                             <select name="at_mag_id">
                                 <option value="">-- Nessun collegamento --</option>
                                 <?php
@@ -132,26 +129,27 @@ if ($edit_id) {
                                 }
                                 ?>
                             </select>
-                            <div class="form-group" style="margin-top: 10px;">
-                                <input type="checkbox" name="at_scarico_fisso" id="chk_f" value="1" <?php echo ($row_edit['AT_SCARICO_FISSO'] == 1) ? 'checked' : ''; ?> style="width: auto;">
-                                <label for="chk_f" style="display:inline;">Scarico fisso (1 unità)</label>
-                            </div>
                         </div>
 
-                        <div style="display: flex; gap: 20px;">
-                            <div class="form-group" style="flex: 1;">
+                        <div class="form-group-checkbox">
+                            <input type="checkbox" name="at_scarico_fisso" id="chk_f" value="1" <?php echo ($row_edit['AT_SCARICO_FISSO'] == 1) ? 'checked' : ''; ?>>
+                            <label for="chk_f">Scarico fisso (1 unità)</label>
+                        </div>
+
+                        <div class="btn-group-flex">
+                            <div class="form-group btn-flex-1">
                                 <label>N. Ripetizioni:</label>
                                 <input type="number" name="nr_ripetizioni" value="<?php echo $row_edit['AT_NR']; ?>">
                             </div>
-                            <div class="form-group" style="flex: 1;">
+                            <div class="form-group btn-flex-1">
                                 <label>Validità (giorni):</label>
                                 <input type="number" name="gg_validita" value="<?php echo $row_edit['AT_GG']; ?>">
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <input type="checkbox" name="is_trattamento" id="chk_t" value="1" <?php echo ($row_edit['AT_TRAT'] == 1) ? 'checked' : ''; ?> style="width: auto;">
-                            <label for="chk_t" style="display:inline;">È un trattamento sanitario</label>
+                        <div class="form-group-checkbox">
+                            <input type="checkbox" name="is_trattamento" id="chk_t" value="1" <?php echo ($row_edit['AT_TRAT'] == 1) ? 'checked' : ''; ?>>
+                            <label for="chk_t">È un trattamento sanitario</label>
                         </div>
 
                         <div class="form-group">
@@ -159,11 +157,13 @@ if ($edit_id) {
                             <textarea name="note" rows="3"><?php echo htmlspecialchars($row_edit['AT_NOTE']); ?></textarea>
                         </div>
 
-                        <div class="btn-group-form" style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button type="submit" name="salva_attivita" class="btn btn-salva" style="flex:2;">Salva Dati</button>
+                        <div class="btn-group-flex">
+                            <button type="submit" name="salva_attivita" class="btn btn-salva btn-flex-2">
+                                <?php echo $edit_id ? "Salva Modifiche" : "Inserisci Attività"; ?>
+                            </button>
                             <?php if($edit_id): ?>
-                                <button type="submit" name="elimina" class="btn btn-elimina" style="flex:1;" onclick="return confirm('Eliminare questa attività?')">Elimina</button>
-                                <a href="attivita.php" class="btn btn-annulla" style="flex:1;">Annulla</a>
+                                <a href="attivita.php?elimina=<?php echo $edit_id; ?>" class="btn btn-elimina btn-flex-1" onclick="return confirm('Eliminare questa attività?')">Elimina</a>
+                                <a href="attivita.php" class="btn btn-annulla btn-flex-1">Annulla</a>
                             <?php endif; ?>
                         </div>
                     </form>
@@ -175,20 +175,22 @@ if ($edit_id) {
     <div class="right-column"></div>
 </main>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
-    tablinks = document.getElementsByClassName("tab-link");
-    for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
-    document.getElementById(tabName).style.display = "block";
-    if (evt) evt.currentTarget.className += " active";
+    $('.tab-content').hide().removeClass('active');
+    $('.tab-link').removeClass('active');
+    $('#' + tabName).show().addClass('active');
+    if (evt) $(evt.currentTarget).addClass('active');
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    if(window.location.search.indexOf('edit=') > -1 || window.location.hash === "#tab-form") {
-        document.getElementById('link-tab-form').click();
+$(document).ready(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if(tabParam === 'tab-form' || <?php echo $edit_id ? 'true' : 'false'; ?>) {
+        openTab(null, 'tab-form');
+    } else {
+        openTab(null, 'tab-lista');
     }
 });
 </script>

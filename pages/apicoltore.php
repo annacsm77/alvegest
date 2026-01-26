@@ -1,17 +1,10 @@
 ﻿<?php
 // DEFINIZIONE VERSIONE FILE
-define('FILE_VERSION', 'V.0.0.1');
+define('FILE_VERSION', 'V.1.0.1 - Zero Inline Styles');
 
 require_once '../includes/config.php'; 
-require_once TPL_PATH . 'header.php'; 
 
-// 1. INIZIALIZZAZIONE VARIABILI
-$messaggio = "";
-$modifica_id = $_GET["modifica"] ?? null;
-$nome_modifica = "";
-$codap_modifica = "";
-
-// 2. GESTIONE LOGICA POST (Inserimento, Modifica, Eliminazione)
+// 1. GESTIONE LOGICA POST IN ALTO
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST["nome"] ?? "";
     $codap = $_POST["codap"] ?? "";
@@ -22,10 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt) {
             $stmt->bind_param("ss", $nome, $codap);
             if ($stmt->execute()) {
-                header("Location: apicoltore.php?status=insert_success");
+                header("Location: apicoltore.php?status=insert_success&tab=tab-lista");
                 exit();
             }
-            $stmt->close();
         }
     } elseif (isset($_POST["modifica"])) {
         $id = $_POST["id"];
@@ -34,10 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt) {
             $stmt->bind_param("ssi", $nome, $codap, $id);
             if ($stmt->execute()) {
-                header("Location: apicoltore.php?status=update_success");
+                header("Location: apicoltore.php?status=update_success&tab=tab-lista");
                 exit();
             }
-            $stmt->close();
         }
     } elseif (isset($_POST["elimina"])) {
         $id = $_POST["id"];
@@ -46,20 +37,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt) {
             $stmt->bind_param("i", $id);
             if ($stmt->execute()) {
-                header("Location: apicoltore.php?status=delete_success");
+                header("Location: apicoltore.php?status=delete_success&tab=tab-lista");
                 exit();
             }
-            $stmt->close();
         }
     }
 }
 
-// 3. MESSAGGI DI STATO E RECUPERO DATI
+require_once TPL_PATH . 'header.php'; 
+
+// --- RECUPERO DATI E MESSAGGI ---
+$modifica_id = $_GET["modifica"] ?? null;
+$nome_modifica = ""; $codap_modifica = "";
+$messaggio = "";
+
 if (isset($_GET["status"])) {
     $status = $_GET["status"];
-    if ($status == "insert_success") $messaggio = "<p class='successo'>Apicoltore inserito correttamente!</p>";
-    if ($status == "update_success") $messaggio = "<p class='successo'>Dati aggiornati con successo!</p>";
-    if ($status == "delete_success") $messaggio = "<p class='successo'>Apicoltore rimosso dal sistema!</p>";
+    if ($status == "insert_success") $messaggio = "<p class='successo'>Apicoltore inserito!</p>";
+    if ($status == "update_success") $messaggio = "<p class='successo'>Modifiche salvate!</p>";
+    if ($status == "delete_success") $messaggio = "<p class='successo txt-danger font-bold'>Apicoltore rimosso!</p>";
 }
 
 if ($modifica_id) {
@@ -72,48 +68,44 @@ if ($modifica_id) {
         $nome_modifica = $row["AP_Nome"];
         $codap_modifica = $row["AP_codap"];
     }
-    $stmt->close();
 }
 ?>
 
 <main class="main-content">
     <div class="left-column"></div>
-
     <div class="center-column">
         <h2 class="titolo-arnie">Gestione Apicoltori</h2>
         <?php echo $messaggio; ?>
-
+        
         <div class="tabs-container">
             <ul class="tabs-menu">
-                <li class="tab-link <?php echo !$modifica_id ? 'active' : ''; ?>" id="link-tab-lista" onclick="openTab(event, 'tab-lista')">Elenco Apicoltori</li>
-                <li class="tab-link <?php echo $modifica_id ? 'active' : ''; ?>" id="link-tab-form" onclick="openTab(event, 'tab-form')">
-                    <?php echo $modifica_id ? "Dettaglio e Modifica" : "Nuovo Apicoltore"; ?>
-                </li>
+                <li class="tab-link <?php echo !$modifica_id ? 'active' : ''; ?>" id="link-tab-lista" onclick="openTab(event, 'tab-lista')">ELENCO</li>
+                <li class="tab-link <?php echo $modifica_id ? 'active' : ''; ?>" id="link-tab-form" onclick="openTab(event, 'tab-form')">MODIFICA</li>
             </ul>
 
             <div id="tab-lista" class="tab-content <?php echo !$modifica_id ? 'active' : ''; ?>">
                 <div class="table-container">
-                    <table>
+                    <table class="selectable-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Codice Apicoltore</th>
-                                <th>Azioni</th>
+                                <th class="txt-center">ID</th>
+                                <th>NOME</th>
+                                <th>CODICE</th>
+                                <th class="txt-center">AZIONI</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            $sql = "SELECT AP_ID, AP_Nome, AP_codap FROM TA_Apicoltore";
+                            $sql = "SELECT * FROM TA_Apicoltore";
                             $result = $conn->query($sql);
                             while ($row = $result->fetch_assoc()):
                             ?>
                             <tr>
-                                <td><?php echo $row["AP_ID"]; ?></td>
-                                <td><?php echo htmlspecialchars($row["AP_Nome"]); ?></td>
+                                <td class="txt-center txt-small txt-muted"><?php echo $row["AP_ID"]; ?></td>
+                                <td class="font-bold"><?php echo htmlspecialchars($row["AP_Nome"]); ?></td>
                                 <td><?php echo htmlspecialchars($row["AP_codap"]); ?></td>
-                                <td>
-                                    <a href="apicoltore.php?modifica=<?php echo $row['AP_ID']; ?>#tab-form" class="btn btn-modifica">Modifica</a>
+                                <td class="txt-center">
+                                    <a href="apicoltore.php?modifica=<?php echo $row['AP_ID']; ?>&tab=tab-form" class="btn-tabella-modifica">Modifica</a>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
@@ -125,64 +117,49 @@ if ($modifica_id) {
             <div id="tab-form" class="tab-content <?php echo $modifica_id ? 'active' : ''; ?>">
                 <div class="form-container">
                     <form action="apicoltore.php" method="post">
-                        <?php if ($modifica_id): ?>
-                            <input type="hidden" name="id" value="<?php echo $modifica_id; ?>">
-                        <?php endif; ?>
-                        
+                        <?php if ($modifica_id): ?><input type="hidden" name="id" value="<?php echo $modifica_id; ?>"><?php endif; ?>
                         <div class="form-group">
-                            <label>Nome:</label>
-                            <input type="text" name="nome" value="<?php echo htmlspecialchars($nome_modifica); ?>" maxlength="60" required>
+                            <label>Nome Apicoltore:</label>
+                            <input type="text" name="nome" value="<?php echo htmlspecialchars($nome_modifica); ?>" required>
                         </div>
                         <div class="form-group">
-                            <label>Codice Apicoltore:</label>
-                            <input type="text" name="codap" value="<?php echo htmlspecialchars($codap_modifica); ?>" maxlength="60" required>
+                            <label>Codice AP:</label>
+                            <input type="text" name="codap" value="<?php echo htmlspecialchars($codap_modifica); ?>" required>
                         </div>
 
-                        <div class="btn-group-form" style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button type="submit" name="<?php echo $modifica_id ? 'modifica' : 'inserisci'; ?>" class="btn btn-salva" style="flex: 2;">
-                                <?php echo $modifica_id ? "Salva" : "Inserisci"; ?>
-                            </button>
-
+                        <div class="btn-group-flex">
+                            <button type="submit" name="<?php echo $modifica_id ? 'modifica' : 'inserisci'; ?>" class="btn btn-salva btn-flex-2">Salva</button>
                             <?php if ($modifica_id): ?>
-                                <button type="submit" name="elimina" class="btn btn-elimina" style="flex: 1;" onclick="return confermaEliminazione();">
-                                    Elimina
-                                </button>
-                                <a href="apicoltore.php" class="btn btn-annulla" style="flex: 1;">Annulla</a>
+                                <button type="submit" name="elimina" class="btn btn-elimina btn-flex-1" onclick="return confirm('Sicuro di voler eliminare?')">Elimina</button>
+                                <a href="apicoltore.php" class="btn btn-annulla btn-flex-1">Annulla</a>
                             <?php endif; ?>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        
-        <div class="versione-info">
-            Versione: <?php echo FILE_VERSION; ?>
-        </div>
     </div>
-
     <div class="right-column"></div>
 </main>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
-    tablinks = document.getElementsByClassName("tab-link");
-    for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
-    document.getElementById(tabName).style.display = "block";
-    if (evt) evt.currentTarget.className += " active";
+    $('.tab-content').hide().removeClass('active');
+    $('.tab-link').removeClass('active');
+    $('#' + tabName).show().addClass('active');
+    if (evt) $(evt.currentTarget).addClass('active');
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    if(window.location.hash === "#tab-form" || <?php echo $modifica_id ? 'true' : 'false'; ?>) {
-        document.getElementById('link-tab-form').click();
+$(document).ready(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if(tabParam === "tab-form" || <?php echo $modifica_id ? 'true' : 'false'; ?>) {
+        openTab(null, 'tab-form');
+    } else {
+        openTab(null, 'tab-lista');
     }
 });
-
-function confermaEliminazione() {
-    return confirm("Sei sicuro di voler eliminare definitivamente questo apicoltore?");
-}
 </script>
 
 <?php require_once TPL_PATH . 'footer.php'; ?>
